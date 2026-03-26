@@ -3,135 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="EMMA-Q 脑波音乐生成工作台">
-    <title>EMMA-Q | 脑波音乐生成工作台</title>
+    <meta name="description" content="欢迎界面">
+    <title>脑电波α计划</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
-    <script src="app.js" defer></script>
 </head>
-<body class="page page-home">
-    <div class="page-shell">
-        <header class="site-header">
-            <a class="brand" href="welcome.html" aria-label="EMMA-Q 首页">
-                <span class="brand-mark">EM</span>
-                <span class="brand-copy">
-                    <strong>EMMA-Q</strong>
-                    <span>Brainwave Alpha Project</span>
-                </span>
-            </a>
-            <nav class="site-nav" aria-label="主导航">
-                <a class="nav-link is-current" href="welcome.html" aria-current="page">首页</a>
-                <a class="nav-link" href="about.html">项目说明</a>
-                <a class="nav-link nav-link--cta" href="preferences.html">进入工作台</a>
-            </nav>
+<body class="welcome">
+    <div class="wrap">
+        <header>
+            <div class="brand" aria-hidden="false">
+                <h1>EMMA-Q</h1>
+                <p>基于脑电波的智能音乐创作平台</p>
+            </div>
         </header>
-
-        <main class="site-main">
-            <section class="page-hero">
-                <canvas class="hero-canvas" data-wave-canvas aria-hidden="true"></canvas>
-                <div class="hero-grid">
-                    <div class="hero-copy" data-reveal>
-                        <p class="eyebrow">Brainwave To Music</p>
-                        <h1>把脑电数据整理成一条可执行的音乐生成链路</h1>
-                        <p class="hero-text">
-                            EMMA-Q 连接 EEG 数据导入、音乐偏好配置、参数导出与后端生成接口。
-                            现在的前端重点是更清晰的工作流、更稳定的草稿保存，以及可直接接入后端的 API 层。
-                        </p>
-                        <div class="hero-actions">
-                            <a class="btn btn--primary" href="preferences.html">打开参数工作台</a>
-                            <a class="btn btn--secondary" href="about.html">查看项目说明</a>
-                        </div>
+        <main>
+            <section class="hero" aria-labelledby="welcome-title">
+                <canvas id="bgCanvas" role="img" aria-hidden="true"></canvas>
+                <div class="hero-content">
+                    <h2 id="welcome-title" class="title">探索脑电信号与音乐的创造性结合</h2>
+                    <!-- <p class="subtitle">探索脑电信号与音乐的创造性结合。</p> -->
+                    <div class="actions">
+                        <a class="btn" href="preferences.html" id="enter-btn">开始创作</a>
+                        <a class="btn secondary" href="about.html">了解更多</a>
                     </div>
-
-                    <aside class="hero-panel" data-reveal>
-                        <p class="eyebrow">这次前端整理后</p>
-                        <h2>你可以直接完成的事情</h2>
-                        <ul class="feature-list">
-                            <li>在一个页面中完成 EEG 数据、音乐规则与和声配置。</li>
-                            <li>将当前参数保存为本地草稿，并导出为 INI 文件。</li>
-                            <li>配置后端地址，做健康检查、提交配置、发起生成任务。</li>
-                        </ul>
-                    </aside>
                 </div>
-
-                <div class="metric-row" data-reveal>
-                    <article class="metric-card">
-                        <span>01</span>
-                        <strong>导入 EEG CSV</strong>
-                        <p>拖拽或选择本地数据文件，建立本次会话的数据源。</p>
-                    </article>
-                    <article class="metric-card">
-                        <span>02</span>
-                        <strong>配置生成规则</strong>
-                        <p>调整节拍、音域、动态与旋律约束，控制生成风格。</p>
-                    </article>
-                    <article class="metric-card">
-                        <span>03</span>
-                        <strong>导出或提交</strong>
-                        <p>既支持离线导出 INI，也支持直接调用后端接口。</p>
-                    </article>
-                    <article class="metric-card">
-                        <span>04</span>
-                        <strong>生成音乐任务</strong>
-                        <p>上传 EEG 文件与参数包，触发后端生成流程。</p>
-                    </article>
-                </div>
-            </section>
-
-            <section class="content-section">
-                <div class="section-heading" data-reveal>
-                    <p class="eyebrow">Workflow</p>
-                    <h2>从采集到输出的完整使用路径</h2>
-                </div>
-                <div class="timeline" data-reveal>
-                    <article class="timeline-step">
-                        <span class="timeline-index">A</span>
-                        <h3>准备硬件</h3>
-                        <p>佩戴 EEG 头环与耳机，确保采集环境稳定。</p>
-                    </article>
-                    <article class="timeline-step">
-                        <span class="timeline-index">B</span>
-                        <h3>导入脑电数据</h3>
-                        <p>把当前会话的 EEG CSV 导入工作台，确定处理时间范围与采样设置。</p>
-                    </article>
-                    <article class="timeline-step">
-                        <span class="timeline-index">C</span>
-                        <h3>定义音乐偏好</h3>
-                        <p>调整节奏量化、音域中心、动态层级与和声策略。</p>
-                    </article>
-                    <article class="timeline-step">
-                        <span class="timeline-index">D</span>
-                        <h3>提交后端生成</h3>
-                        <p>检查 API 健康状态后，将参数与 EEG 文件一起发往生成服务。</p>
-                    </article>
-                </div>
-            </section>
-
-            <section class="content-section split-section">
-                <article class="panel-card" data-reveal>
-                    <p class="eyebrow">Interface Layer</p>
-                    <h2>前后端接口现在被单独抽离</h2>
-                    <p>
-                        旧版页面把交互逻辑、校验、导出和接口处理都塞在一个 HTML 里。
-                        现在接口请求被放到独立的 <code>api-client.js</code>，参数页逻辑放到
-                        <code>preferences.js</code>，后续接 Python、Node 或本地服务都更直接。
-                    </p>
-                </article>
-                <article class="panel-card panel-card--accent" data-reveal>
-                    <p class="eyebrow">Offline First</p>
-                    <h2>没有后端时也能继续工作</h2>
-                    <p>
-                        即使服务还没启动，你仍然可以保存草稿、导出 INI、整理参数。
-                        后端准备好后，只要填入 API 地址，页面就能直接切换到在线提交流程。
-                    </p>
-                </article>
             </section>
         </main>
-
-        <footer class="site-footer">
-            <p>EMMA-Q · 基于脑电信号的音乐生成交互界面</p>
-            <p>The Brainwave Alpha Project</p>
+        <footer>
+            开发团队 脑电波ɑ计划 <br/>中国传媒大学 卜靖航 陈为 支殿畅 公衍浩
         </footer>
     </div>
+    <script>
+        // Canvas 背景：绘制动态波形，响应窗口尺寸
+        (function(){
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+            let w, h, t = 0;
+            function resize(){
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = Math.round(rect.width * devicePixelRatio);
+                canvas.height = Math.round(rect.height * devicePixelRatio);
+                ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+                w = rect.width; h = rect.height;
+            }
+            function draw(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                // 背景纯色
+                ctx.fillStyle = 'rgba(11,16,32,0.8)';
+                ctx.fillRect(0,0,w,h);
+
+                // 多条正弦波模拟脑电波
+                const lines = 3;
+                for(let i=0;i<lines;i++){
+                    const amp = 18 + i*8;
+                    const freq = 0.6 + i*0.3;
+                    ctx.beginPath();
+                    ctx.lineWidth = 2.0 - i*0.5;
+                    ctx.strokeStyle = `rgba(53,197,197,${0.9 - i*0.25})`;
+                    for(let x=0;x<=w;x+=4){
+                        const y = h/2 + Math.sin((x/60)*freq + t*0.02 + i)*amp * Math.sin(t*0.005 + i);
+                        if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+                    }
+                    ctx.stroke();
+                }
+                t++;
+                requestAnimationFrame(draw);
+            }
+
+            // 初始和监听
+            function init(){
+                resize();
+                window.addEventListener('resize', ()=>{ resize(); });
+                draw();
+            }
+            if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
+        })();
+    </script>
 </body>
 </html>

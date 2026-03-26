@@ -3,134 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="EMMA-Q 项目说明与接口约定">
-    <title>EMMA-Q | 项目说明</title>
+    <meta name="description" content="关于我们">
+    <title>关于我们</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
-    <script src="app.js" defer></script>
 </head>
-<body class="page page-about">
-    <div class="page-shell">
-        <header class="site-header">
-            <a class="brand" href="welcome.html" aria-label="EMMA-Q 首页">
-                <span class="brand-mark">EM</span>
-                <span class="brand-copy">
-                    <strong>EMMA-Q</strong>
-                    <span>Brainwave Alpha Project</span>
-                </span>
-            </a>
-            <nav class="site-nav" aria-label="主导航">
-                <a class="nav-link" href="welcome.html">首页</a>
-                <a class="nav-link is-current" href="about.html" aria-current="page">项目说明</a>
-                <a class="nav-link nav-link--cta" href="preferences.html">进入工作台</a>
+<body>
+    <div class="wrap">
+        <header>
+            <div class="brand" aria-hidden="false">
+                <h1>EMMA-Q</h1>
+                <p>基于脑电波的智能音乐创作平台</p>
+            </div>
+            <nav aria-label="主导航">
+                <a class="btn" href="welcome.html">返回首页</a>
             </nav>
         </header>
 
-        <main class="site-main">
-            <section class="page-hero page-hero--compact">
-                <canvas class="hero-canvas" data-wave-canvas aria-hidden="true"></canvas>
-                <div class="hero-grid hero-grid--single">
-                    <div class="hero-copy" data-reveal>
-                        <p class="eyebrow">About The Project</p>
-                        <h1>脑波分析、音乐映射与生成评估接口的一体化前端入口</h1>
-                        <p class="hero-text">
-                            The Brainwave Alpha Project 聚焦 EEG 数据到音乐生成之间的映射链路。
-                            当前页面把项目背景、前端职责和默认接口约定整理成统一说明，方便本地联调与后续部署。
-                        </p>
+        <main>
+            <section class="hero" aria-labelledby="about-title">
+                <canvas id="bgCanvas" role="img" aria-hidden="true"></canvas>
+                <div class="hero-content">
+                    <h2 id="about-title" class="title">关于我们</h2>
+                    <p class="subtitle">了解脑电波α计划的详细信息。</p>
+                    <div class="actions">
                     </div>
                 </div>
             </section>
 
-            <section class="content-section panel-grid panel-grid--three">
-                <article class="panel-card" data-reveal>
-                    <p class="eyebrow">Project</p>
-                    <h2>项目目标</h2>
-                    <p>
-                        通过 EEG 数据估计用户状态，再将状态映射为音乐生成参数，
-                        最终生成符合情绪与偏好约束的旋律、和声与评估结果。
-                    </p>
-                </article>
-                <article class="panel-card" data-reveal>
-                    <p class="eyebrow">Frontend</p>
-                    <h2>前端职责</h2>
-                    <p>
-                        负责参数输入、字段校验、草稿保存、INI 导出，以及和后端完成健康检查、
-                        配置提交、生成请求与结果展示。
-                    </p>
-                </article>
-                <article class="panel-card" data-reveal>
-                    <p class="eyebrow">Backend</p>
-                    <h2>后端职责</h2>
-                    <p>
-                        负责读取 EEG 文件、执行信号分析、生成 MIDI 与中间产物，
-                        并在需要时串联评估流程，返回统一 JSON 结果。
-                    </p>
-                </article>
-            </section>
-
-            <section class="content-section split-section">
-                <article class="panel-card" data-reveal>
-                    <p class="eyebrow">Generation Flow</p>
-                    <h2>推荐处理流程</h2>
-                    <ul class="feature-list">
-                        <li>导入 EEG CSV，并选择需要分析的时间窗口。</li>
-                        <li>设置拍号、音域中心、力度预设和旋律限制。</li>
-                        <li>决定是否启用和弦轨，并指定调性、情绪与和弦风格。</li>
-                        <li>保存草稿或导出 INI，然后把完整参数发送给生成服务。</li>
+            <section id="about-content" class="simple-panel" aria-labelledby="readme-title">
+                <h3 id="readme-title">项目介绍</h3>
+                <div class="readme-content">
+                    <h4>The Brainwave Alpha Project</h4>
+                    <p><strong>Designed & Written By:</strong></p>
+                    <ul>
+                        <li>Jinghang Bu</li>
+                        <li>Dianchang Zhi</li>
+                        <li>Wei Chen</li>
+                        <li>Yanhao Gong</li>
                     </ul>
-                </article>
-
-                <article class="panel-card panel-card--accent" data-reveal>
-                    <p class="eyebrow">API Contract</p>
-                    <h2>默认接口约定</h2>
-                    <ul class="contract-list">
-                        <li><strong>GET</strong> <code>/api/health</code> 用于健康检查。</li>
-                        <li><strong>POST</strong> <code>/api/preferences</code> 接收 JSON 配置快照。</li>
-                        <li><strong>POST</strong> <code>/api/pipeline/run</code> 上传 EEG CSV，并在一次请求中执行生成与评估。</li>
-                        <li>所有响应保持 JSON，并包含任务状态、生成产物、评估结果和清晰的错误信息。</li>
-                    </ul>
-                </article>
-            </section>
-
-            <section class="content-section">
-                <div class="section-heading" data-reveal>
-                    <p class="eyebrow">Authors</p>
-                    <h2>项目成员</h2>
-                </div>
-                <div class="team-grid" data-reveal>
-                    <article class="team-card">
-                        <h3>公衍浩（队长） / Yanhao Gong</h3>
-                        <p>前端编写</p>
-                        <p>Frontend Development</p>
-                    </article>
-                    <article class="team-card">
-                        <h3>卜靖航 / Jinghang Bu</h3>
-                        <p>多智能体协作质量评估系统的完成</p>
-                        <p>Multi-Agent Collaborative Evaluation System</p>
-                    </article>
-                    <article class="team-card">
-                        <h3>陈为 / Wei Chen</h3>
-                        <p>脑电波文件处理成 MIDI 文件工作流的实现</p>
-                        <p>EEG-to-MIDI Workflow Implementation</p>
-                    </article>
-                    <article class="team-card">
-                        <h3>支殿畅 / Dianchang Zhi</h3>
-                        <p>MIDI 文件的播放</p>
-                        <p>MIDI Playback</p>
-                    </article>
-                    <article class="team-card">
-                        <h3>赵佳瑶 / Jiayao Zhao</h3>
-                        <p>问卷编写与市场调研</p>
-                        <p>Questionnaire Design &amp; Market Research</p>
-                    </article>
+                    <h4>Introduction & Instructions</h4>
+                    <p>This is a innovative project which can generate music with brainwave data.</p>
+                    <p>To start the experience, open welcome.html using your browser.</p>
+                    <p>In the beginning, the user will be asked to wear both the EEG headset and earphones.</p>
+                    <p>Then, system will play several pieces of music which contain no lyrics.</p>
+                    <p>During this process, system will collect your EEG data and analyse your mental status, like mood.</p>
+                    <p>After that, system will generate a piece of music using the result of the calculation.</p>
                 </div>
             </section>
         </main>
 
-        <footer class="site-footer">
-            <p>更多接口字段说明见当前目录下的 <code>Readme.md</code>。</p>
-            <p>EMMA-Q · The Brainwave Alpha Project</p>
+        <footer>
+            开发团队 脑电波ɑ计划 <br/>中国传媒大学 卜靖航 陈为 支殿畅 公衍浩
         </footer>
     </div>
+    <script>
+        // Canvas 背景：绘制动态波形，响应窗口尺寸
+        (function(){
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+            let w, h, t = 0;
+            function resize(){
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = Math.round(rect.width * devicePixelRatio);
+                canvas.height = Math.round(rect.height * devicePixelRatio);
+                ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+                w = rect.width; h = rect.height;
+            }
+            function draw(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                // 背景纯色
+                ctx.fillStyle = 'rgba(11,16,32,0.8)';
+                ctx.fillRect(0,0,w,h);
+                
+                /*
+                // 多条正弦波模拟脑电波
+                const lines = 3;
+                for(let i=0;i<lines;i++){
+                    const amp = 18 + i*8;
+                    const freq = 0.6 + i*0.3;
+                    ctx.beginPath();
+                    ctx.lineWidth = 2.0 - i*0.5;
+                    ctx.strokeStyle = `rgba(53,197,197,${0.9 - i*0.25})`;
+                    for(let x=0;x<=w;x+=4){
+                        const y = h/2 + Math.sin((x/60)*freq + t*0.02 + i)*amp * Math.sin(t*0.005 + i);
+                        if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+                    }
+                    ctx.stroke();
+                }
+                t++;
+                requestAnimationFrame(draw);
+                */
+            }
+
+            // 初始和监听
+            function init(){
+                resize();
+                window.addEventListener('resize', ()=>{ resize(); });
+                draw();
+            }
+            if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init); else init();
+        })();
+    </script>
 </body>
 </html>

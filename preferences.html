@@ -3,666 +3,1955 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="EMMA-Q 参数工作台">
-    <title>EMMA-Q | 参数工作台</title>
+    <meta name="description" content="偏好设置">
+    <title>偏好设置</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
-    <script src="app.js" defer></script>
     <script src="config.js" defer></script>
     <script src="api-client.js" defer></script>
     <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/html-midi-player@1.5.0" defer></script>
     <script src="preferences.js" defer></script>
 </head>
-<body class="page page-preferences">
-    <div class="page-shell">
-        <header class="site-header">
-            <a class="brand" href="welcome.html" aria-label="EMMA-Q 首页">
-                <span class="brand-mark">EM</span>
-                <span class="brand-copy">
-                    <strong>EMMA-Q</strong>
-                    <span>Brainwave Alpha Project</span>
-                </span>
-            </a>
-            <nav class="site-nav" aria-label="主导航">
-                <a class="nav-link" href="welcome.html">首页</a>
-                <a class="nav-link" href="about.html">项目说明</a>
-                <a class="nav-link is-current" href="preferences.html" aria-current="page">参数工作台</a>
+<body>
+    <div class="global-bg" aria-hidden="true"></div>
+    <div class="wrap">
+        <header>
+            <div class="brand" aria-hidden="false">
+                <h1>EMMA-Q</h1>
+                <p>基于脑电波的智能音乐创作平台</p>
+            </div>
+            <nav aria-label="主导航">
+                <a class="btn" href="welcome.html">返回首页</a>
             </nav>
         </header>
 
-        <main class="site-main">
-            <section class="page-hero">
-                <canvas class="hero-canvas" data-wave-canvas aria-hidden="true"></canvas>
-                <div class="hero-grid">
-                    <div class="hero-copy" data-reveal>
-                        <p class="eyebrow">Preference Workbench</p>
-                        <h1>把脑电输入、音乐规则和后端执行放进同一个控制台</h1>
-                        <p class="hero-text">
-                            &#x8FD9;&#x4E00;&#x9875;&#x7528;&#x4E8E;&#x96C6;&#x4E2D;&#x5B8C;&#x6210;&#x53C2;&#x6570;&#x8BBE;&#x7F6E;&#x3001;MIDI &#x751F;&#x6210;&#x3001;&#x5728;&#x7EBF;&#x8BD5;&#x542C;&#x3001;&#x4E0B;&#x8F7D; MIDI &#x4E0E;&#x8BC4;&#x4F30;&#x53D1;&#x8D77;&#x3002;&#x4FDD;&#x7559;&#x73B0;&#x6709;&#x53C2;&#x6570;&#x533A;&#x4E0D;&#x53D8;&#xFF0C;&#x53EA;&#x7CBE;&#x7B80;&#x6267;&#x884C;&#x6D41;&#x7A0B;&#x3002;
-                        </p>
-                    </div>
+        <main>
+            <section class="hero" aria-labelledby="genre-title">
+                <canvas id="bgCanvas" role="img" aria-hidden="true"></canvas>
+                <div class="hero-content">
+                    <h2 id="genre-title" class="title">偏好设置</h2>
+                    <p class="subtitle">根据您的喜好调整音乐生成选项。</p>
+                    <div class="actions">
+                        <div class="preferences-form">
+                            <div class="field full-width">
+                                <label for="eeg-file">导入 EEG 数据（CSV）</label>
+                                <div id="drop-zone" class="drop-zone" aria-label="拖拽或选择文件上传">
+                                    <span class="drop-zone__label">拖拽文件到此处<br/>或选择本地文件</span>
+                                    <input type="file" id="eeg-file" accept=".csv" />
+                                </div>
+                                <p class="note">支持 .csv 文件，仅支持单个文件上传。</p>
+                                <div class="field-error" id="eeg-file-error"></div>
+                            </div>
 
-                    <aside class="hero-panel" data-reveal>
-                        <p class="eyebrow">执行节奏</p>
-                        <h2>推荐工作流</h2>
-                        <ul class="feature-list">
-                            <li>&#x5148;&#x9009;&#x62E9; EEG CSV&#xFF0C;&#x518D;&#x8BBE;&#x5B9A;&#x5206;&#x6790;&#x7A97;&#x53E3;&#x4E0E;&#x91C7;&#x6837;&#x8303;&#x56F4;&#x3002;</li>
-                            <li>&#x5728;&#x89C4;&#x5219;&#x3001;&#x52A8;&#x6001;&#x548C;&#x9AD8;&#x7EA7;&#x53C2;&#x6570;&#x91CC;&#x5B8C;&#x6210;&#x97F3;&#x4E50;&#x7EA6;&#x675F;&#x3002;</li>
-                            <li>&#x751F;&#x6210;&#x6210;&#x529F;&#x540E;&#x53EF;&#x76F4;&#x63A5;&#x8BD5;&#x542C;&#x3001;&#x4E0B;&#x8F7D; MIDI&#xFF0C;&#x5E76;&#x6309;&#x9700;&#x5F00;&#x59CB;&#x8BC4;&#x4F30;&#x3002;</li>
-                        </ul>
-                    </aside>
+                            <div class="field">
+                                <label for="start-time">开始时间 (秒):</label>
+                                <input type="number" id="start-time" min="0" max="120" value="0"/>
+                                <div class="field-error" id="start-time-error"></div>
+                            </div>
+
+                            <div class="field">
+                                <label for="duration">时长 (秒):</label>
+                                <input type="number" id="duration" min="30" max="120" value="30"/>
+                                <div class="field-error" id="duration-error"></div>
+                            </div>
+
+                            <div class="field">
+                                <label for="sampling-rate">目标采样率 (Hz): <span id="sampling-rate-value">64</span></label>
+                                <input type="range" id="sampling-rate" min="16" max="128" value="64"/>
+                                <div class="field-error" id="sampling-rate-error"></div>
+                            </div>
+
+                            <div class="field">
+                                <label for="max-points">最大点数：</label>
+                                <input type="number" id="max-points" min="1000" max="30000" step="1" value="8000"/>
+                                <div class="field-error" id="max-points-error"></div>
+                            </div>
+
+                            <div class="field">
+                                <label for="melody-channel">主旋律通道: <span id="melody-channel-value">0</span></label>
+                                <input type="range" id="melody-channel" min="0" max="6" step="1" value="0" />
+                                <div class="field-error" id="melody-channel-error"></div>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <div class="workspace-grid">
-                <div class="workspace-main">
-                    <nav class="section-nav" aria-label="参数分区导航">
-                        <a class="section-chip" href="#panel-data">数据输入</a>
-                        <a class="section-chip" href="#panel-rules">音乐规则</a>
-                        <a class="section-chip" href="#panel-advanced">高级参数</a>
-                        <a class="section-chip" href="#panel-chord">和声设置</a>
-                        <a class="section-chip" href="#panel-output">执行与接口</a>
-                    </nav>
-
-                    <form id="preferences-form" novalidate>
-                        <section class="panel" id="panel-data">
-                            <div class="panel-header">
-                                <div class="panel-heading">
-                                    <p class="eyebrow">Input</p>
-                                    <h2>数据输入与预处理</h2>
-                                    <p class="panel-text">设置 EEG 文件、分析时间窗口、目标采样率和最大处理点数。</p>
-                                </div>
-                                <div class="panel-tags" aria-hidden="true">
-                                    <span class="tag">EEG CSV</span>
-                                    <span class="tag">Preprocess</span>
-                                </div>
+            <section class="hero" aria-labelledby="module2-title">
+                <canvas id="bgCanvas2" role="img" aria-hidden="true"></canvas>
+                <div class="hero-content">
+                    <h3 id="module2-title" class="section-title">音乐规则</h3>
+                    <div class="actions">
+                        <div class="preferences-form">
+                            <div class="field">
+                                <label for="rule">规则：</label>
+                                <select id="rule">
+                                    <option value="Rule1">Rule1</option>
+                                    <option value="Rule2">Rule2</option>
+                                </select>
+                                <div class="field-error" id="rule-error"></div>
                             </div>
 
-                            <div class="field-grid">
-                                <div class="field full-width">
-                                    <label class="field-label" for="eeg-file">
-                                        <span>EEG 数据文件</span>
-                                        <span class="value-chip">CSV</span>
-                                    </label>
-                                    <div id="drop-zone" class="drop-zone">
-                                        <div class="drop-zone-copy">
-                                            <strong id="drop-zone-title">拖拽 EEG CSV 到此处</strong>
-                                            <span id="drop-zone-subtitle">或点击选择本地文件。草稿只会记住文件名，刷新后需要重新选择文件本体。</span>
-                                        </div>
-                                        <input type="file" id="eeg-file" accept=".csv">
-                                    </div>
-                                    <div class="field-error" id="eeg-file-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="start-time">
-                                        <span>开始时间（秒）</span>
-                                    </label>
-                                    <input type="number" id="start-time" min="0" max="120" value="0">
-                                    <div class="field-error" id="start-time-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="duration">
-                                        <span>分析时长（秒）</span>
-                                    </label>
-                                    <input type="number" id="duration" min="30" max="120" value="30">
-                                    <div class="field-error" id="duration-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="sampling-rate">
-                                        <span>目标采样率</span>
-                                        <span class="value-chip" data-value-for="sampling-rate">64</span>
-                                    </label>
-                                    <input type="range" id="sampling-rate" min="16" max="128" step="1" value="64">
-                                    <div class="field-error" id="sampling-rate-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="max-points">
-                                        <span>最大处理点数</span>
-                                    </label>
-                                    <input type="number" id="max-points" min="1000" max="30000" step="1" value="8000">
-                                    <div class="field-error" id="max-points-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="melody-channel">
-                                        <span>主旋律通道</span>
-                                        <span class="value-chip" data-value-for="melody-channel">0</span>
-                                    </label>
-                                    <input type="range" id="melody-channel" min="0" max="6" step="1" value="0">
-                                    <div class="field-error" id="melody-channel-error"></div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section class="panel" id="panel-rules">
-                            <div class="panel-header">
-                                <div class="panel-heading">
-                                    <p class="eyebrow">Rules</p>
-                                    <h2>音乐规则与动态</h2>
-                                    <p class="panel-text">决定拍号、音域中心、跨度模式、力度预设和动态限制策略。</p>
-                                </div>
-                                <div class="panel-tags" aria-hidden="true">
-                                    <span class="tag">Rule Set</span>
-                                    <span class="tag">Dynamics</span>
-                                </div>
+                            <div class="field">
+                                <label for="time-signature" >拍号:</label>
+                                <select id="time-signature">
+                                    <option value="2/4">2/4</option>
+                                    <option value="3/4">3/4</option>
+                                    <option value="4/4">4/4</option>
+                                    <option value="3/8">3/8</option>
+                                    <option value="6/8">6/8</option>
+                                </select>
+                                <div class="field-error" id="time-signature-error"></div>
                             </div>
 
-                            <div class="field-grid">
-                                <div class="field">
-                                    <label class="field-label" for="rule">
-                                        <span>规则模板</span>
-                                    </label>
-                                    <select id="rule">
-                                        <option value="Rule1">Rule 1</option>
-                                        <option value="Rule2">Rule 2</option>
-                                    </select>
-                                    <div class="field-error" id="rule-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="time-signature">
-                                        <span>拍号</span>
-                                    </label>
-                                    <select id="time-signature">
-                                        <option value="2/4">2/4</option>
-                                        <option value="3/4">3/4</option>
-                                        <option value="4/4">4/4</option>
-                                        <option value="3/8">3/8</option>
-                                        <option value="6/8">6/8</option>
-                                    </select>
-                                    <div class="field-error" id="time-signature-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="pitch-center">
-                                        <span>音域中心</span>
-                                        <span class="value-chip" data-value-for="pitch-center">66</span>
-                                    </label>
-                                    <input type="range" id="pitch-center" min="60" max="72" step="1" value="66">
-                                    <div class="field-error" id="pitch-center-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="span">
-                                        <span>三层跨度</span>
-                                        <span class="value-chip" data-value-for="span">8</span>
-                                    </label>
-                                    <input type="range" id="span" min="4" max="12" step="1" value="8">
-                                    <div class="field-error" id="span-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="span-mode">
-                                        <span>跨度模式</span>
-                                    </label>
-                                    <select id="span-mode">
-                                        <option value="Mode1">自动（推荐）</option>
-                                        <option value="Mode2">手动</option>
-                                    </select>
-                                    <div class="field-error" id="span-mode-error"></div>
-                                </div>
-
-                                <div class="field span-mode-manual-field is-disabled">
-                                    <label class="field-label" for="pitch-1">
-                                        <span>Pitch 1（高）</span>
-                                    </label>
-                                    <input type="number" id="pitch-1" min="0" max="127" value="74" disabled>
-                                    <div class="field-error" id="pitch-1-error"></div>
-                                </div>
-
-                                <div class="field span-mode-manual-field is-disabled">
-                                    <label class="field-label" for="pitch-2">
-                                        <span>Pitch 2（中）</span>
-                                    </label>
-                                    <input type="number" id="pitch-2" min="0" max="127" value="66" disabled>
-                                    <div class="field-error" id="pitch-2-error"></div>
-                                </div>
-
-                                <div class="field span-mode-manual-field is-disabled">
-                                    <label class="field-label" for="pitch-3">
-                                        <span>Pitch 3（低）</span>
-                                    </label>
-                                    <input type="number" id="pitch-3" min="0" max="127" value="58" disabled>
-                                    <div class="field-error" id="pitch-3-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="dynamics-preset">
-                                        <span>力度预设</span>
-                                    </label>
-                                    <select id="dynamics-preset">
-                                        <option value="Light">柔和</option>
-                                        <option value="Standard">标准</option>
-                                        <option value="Strong">强烈</option>
-                                        <option value="Custom">手动</option>
-                                    </select>
-                                    <div class="field-error" id="dynamics-preset-error"></div>
-                                </div>
-
-                                <div class="field dynamics-manual-field is-disabled">
-                                    <label class="field-label" for="vel-1">
-                                        <span>Vel 1</span>
-                                    </label>
-                                    <input type="number" id="vel-1" min="1" max="127" value="90" disabled>
-                                    <div class="field-error" id="vel-1-error"></div>
-                                </div>
-
-                                <div class="field dynamics-manual-field is-disabled">
-                                    <label class="field-label" for="vel-2">
-                                        <span>Vel 2</span>
-                                    </label>
-                                    <input type="number" id="vel-2" min="1" max="127" value="70" disabled>
-                                    <div class="field-error" id="vel-2-error"></div>
-                                </div>
-
-                                <div class="field dynamics-manual-field is-disabled">
-                                    <label class="field-label" for="vel-3">
-                                        <span>Vel 3</span>
-                                    </label>
-                                    <input type="number" id="vel-3" min="1" max="127" value="55" disabled>
-                                    <div class="field-error" id="vel-3-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="magnet">
-                                        <span>磁力</span>
-                                        <span class="value-chip" data-value-for="magnet">4</span>
-                                    </label>
-                                    <input type="range" id="magnet" min="0" max="12" step="1" value="4">
-                                    <div class="field-error" id="magnet-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="loudness-offset">
-                                        <span>整体响度偏移</span>
-                                        <span class="value-chip" data-value-for="loudness-offset">0</span>
-                                    </label>
-                                    <input type="range" id="loudness-offset" min="-30" max="30" step="1" value="0">
-                                    <div class="field-error" id="loudness-offset-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="dynamics-limit-strategy">
-                                        <span>力度上限策略</span>
-                                    </label>
-                                    <select id="dynamics-limit-strategy">
-                                        <option value="Conservative">保守</option>
-                                        <option value="Balanced">平衡</option>
-                                        <option value="Aggressive">激进</option>
-                                    </select>
-                                    <div class="field-error" id="dynamics-limit-strategy-error"></div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section class="panel" id="panel-advanced">
-                            <div class="panel-header">
-                                <div class="panel-heading">
-                                    <p class="eyebrow">Advanced</p>
-                                    <h2>高级旋律参数</h2>
-                                    <p class="panel-text">用更细的参数约束节奏量化、摆动程度、音域范围和旋律跳进方式。</p>
-                                </div>
-                                <div class="panel-tags" aria-hidden="true">
-                                    <span class="tag">Rhythm</span>
-                                    <span class="tag">Pitch Shape</span>
-                                </div>
+                            <div class="field">
+                                <label for="pitch-center">音域中心: <span id="pitch-center-value">66</span></label>
+                                <input type="range" id="pitch-center" min="60" max="72" value="66"/>
+                                <div class="field-error" id="pitch-center-error"></div>
                             </div>
 
-                            <div class="field-grid">
-                                <div class="field">
-                                    <label class="field-label" for="rhythm-quantization">
-                                        <span>节奏量化</span>
-                                    </label>
-                                    <select id="rhythm-quantization">
-                                        <option value="Off">Off</option>
-                                        <option value="1/8">1/8</option>
-                                        <option value="1/16">1/16</option>
-                                        <option value="1/32">1/32</option>
-                                    </select>
-                                    <div class="field-error" id="rhythm-quantization-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="swing-amount">
-                                        <span>摆动程度</span>
-                                        <span class="value-chip" data-value-for="swing-amount">0.12</span>
-                                    </label>
-                                    <input type="range" id="swing-amount" min="0" max="0.6" step="0.01" value="0.12">
-                                    <div class="field-error" id="swing-amount-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="note-duration-multiplier">
-                                        <span>音符时值倍率</span>
-                                        <span class="value-chip" data-value-for="note-duration-multiplier">1.2</span>
-                                    </label>
-                                    <input type="range" id="note-duration-multiplier" min="0.25" max="2.5" step="0.05" value="1.2">
-                                    <div class="field-error" id="note-duration-multiplier-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="sparsity">
-                                        <span>稀疏化等级</span>
-                                    </label>
-                                    <select id="sparsity">
-                                        <option value="0">0</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                    </select>
-                                    <div class="field-error" id="sparsity-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="scale-constraint">
-                                        <span>音阶约束</span>
-                                    </label>
-                                    <select id="scale-constraint">
-                                        <option value="Diatonic">Diatonic</option>
-                                        <option value="Chromatic">Chromatic</option>
-                                        <option value="Penta">Penta</option>
-                                    </select>
-                                    <div class="field-error" id="scale-constraint-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="pitch-coherence">
-                                        <span>修音连贯程度</span>
-                                    </label>
-                                    <select id="pitch-coherence">
-                                        <option value="None">None</option>
-                                        <option value="FX1">FX1</option>
-                                        <option value="FX2">FX2</option>
-                                        <option value="FX3">FX3</option>
-                                        <option value="FX4">FX4</option>
-                                    </select>
-                                    <div class="field-error" id="pitch-coherence-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="pitch-range-min">
-                                        <span>音域下限</span>
-                                        <span class="value-chip" data-value-for="pitch-range-min">48</span>
-                                    </label>
-                                    <input type="range" id="pitch-range-min" min="12" max="84" step="1" value="48">
-                                    <div class="field-error" id="pitch-range-min-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="pitch-range-max">
-                                        <span>音域上限</span>
-                                        <span class="value-chip" data-value-for="pitch-range-max">84</span>
-                                    </label>
-                                    <input type="range" id="pitch-range-max" min="48" max="120" step="1" value="84">
-                                    <div class="field-error" id="pitch-range-max-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="max-leap">
-                                        <span>最大跳进</span>
-                                        <span class="value-chip" data-value-for="max-leap">9</span>
-                                    </label>
-                                    <input type="range" id="max-leap" min="3" max="24" step="1" value="9">
-                                    <div class="field-error" id="max-leap-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="transpose">
-                                        <span>整体转调</span>
-                                        <span class="value-chip" data-value-for="transpose">0</span>
-                                    </label>
-                                    <input type="range" id="transpose" min="-10" max="10" step="1" value="0">
-                                    <div class="field-error" id="transpose-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="melody-min-velocity">
-                                        <span>主旋律最小力度</span>
-                                        <span class="value-chip" data-value-for="melody-min-velocity">45</span>
-                                    </label>
-                                    <input type="range" id="melody-min-velocity" min="30" max="60" step="1" value="45">
-                                    <div class="field-error" id="melody-min-velocity-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="melody-max-velocity">
-                                        <span>主旋律最大力度</span>
-                                        <span class="value-chip" data-value-for="melody-max-velocity">90</span>
-                                    </label>
-                                    <input type="range" id="melody-max-velocity" min="75" max="105" step="1" value="90">
-                                    <div class="field-error" id="melody-max-velocity-error"></div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section class="panel" id="panel-chord">
-                            <div class="panel-header">
-                                <div class="panel-heading">
-                                    <p class="eyebrow">Harmony</p>
-                                    <h2>和声与情绪设置</h2>
-                                    <p class="panel-text">决定是否生成和弦轨，以及调性、情绪和和弦风格。</p>
-                                </div>
-                                <div class="panel-tags" aria-hidden="true">
-                                    <span class="tag">Chord Track</span>
-                                    <span class="tag">Emotion</span>
-                                </div>
+                            <div class="field">
+                                <label for="span">三档跨度: <span id="span-value">8</span></label>
+                                <input type="range" id="span" min="4" max="12" value="8" />
+                                <div class="field-error" id="span-error"></div>
                             </div>
 
-                            <div class="field-grid">
-                                <div class="field checkbox-field">
-                                    <input type="checkbox" id="chord-track-enabled">
-                                    <div class="field-copy">
-                                        <label class="field-label" for="chord-track-enabled">
-                                            <span>启用和弦轨</span>
-                                        </label>
-                                    </div>
-                                    <div class="field-error" id="chord-track-enabled-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="key-root">
-                                        <span>调性根音</span>
-                                    </label>
-                                    <select id="key-root">
-                                        <option value="Auto">Auto</option>
-                                        <option value="C">C</option>
-                                        <option value="C#">C#</option>
-                                        <option value="D">D</option>
-                                        <option value="D#">D#</option>
-                                        <option value="E">E</option>
-                                        <option value="F">F</option>
-                                        <option value="F#">F#</option>
-                                        <option value="G">G</option>
-                                        <option value="G#">G#</option>
-                                        <option value="A">A</option>
-                                        <option value="A#">A#</option>
-                                        <option value="B">B</option>
-                                    </select>
-                                    <div class="field-error" id="key-root-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="major-minor">
-                                        <span>大小调</span>
-                                    </label>
-                                    <select id="major-minor">
-                                        <option value="Auto">Auto</option>
-                                        <option value="Major">Major</option>
-                                        <option value="Minor">Minor</option>
-                                    </select>
-                                    <div class="field-error" id="major-minor-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="emotion">
-                                        <span>情绪</span>
-                                    </label>
-                                    <select id="emotion">
-                                        <option value="Calm">Calm</option>
-                                        <option value="Excited">Excited</option>
-                                        <option value="Sad">Sad</option>
-                                        <option value="Tense">Tense</option>
-                                    </select>
-                                    <div class="field-error" id="emotion-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="chord-style">
-                                        <span>和弦风格</span>
-                                    </label>
-                                    <select id="chord-style">
-                                        <option value="Block">Block</option>
-                                        <option value="Arp">Arp</option>
-                                    </select>
-                                    <div class="field-error" id="chord-style-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="chord-change-frequency">
-                                        <span>和弦变换频率</span>
-                                        <span class="value-chip" data-value-for="chord-change-frequency">8</span>
-                                    </label>
-                                    <input type="range" id="chord-change-frequency" min="1" max="32" step="1" value="8">
-                                    <div class="field-error" id="chord-change-frequency-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="chord-octave-offset">
-                                        <span>和弦八度偏移</span>
-                                        <span class="value-chip" data-value-for="chord-octave-offset">0</span>
-                                    </label>
-                                    <input type="range" id="chord-octave-offset" min="-2" max="2" step="1" value="0">
-                                    <div class="field-error" id="chord-octave-offset-error"></div>
-                                </div>
-
-                                <div class="field">
-                                    <label class="field-label" for="chord-velocity">
-                                        <span>和弦力度</span>
-                                        <span class="value-chip" data-value-for="chord-velocity">55</span>
-                                    </label>
-                                    <input type="range" id="chord-velocity" min="20" max="90" step="1" value="55">
-                                    <div class="field-error" id="chord-velocity-error"></div>
-                                </div>
+                            <div class="field">
+                                <label for="span-mode" >三档模式: </label>
+                                <select id="span-mode" onchange="document.querySelectorAll('.span-mode-manual-field').forEach(function(field){ var isManual = (this.value||'').toLowerCase() === 'mode2'; field.classList[isManual ? 'remove' : 'add']('is-disabled'); field.setAttribute('aria-disabled', isManual ? 'false' : 'true'); var input = field.querySelector('input'); if (input) { input.disabled = !isManual; } }, this)">
+                                    <option value="Mode1">自动（推荐）</option>
+                                    <option value="Mode2">手动</option>
+                                </select>
+                                <div class="field-error" id="span-mode-error"></div>
                             </div>
-                        </section>
-
-                        <section class="panel" id="panel-output">
-                            <div class="panel-header">
-                                <div class="panel-heading">
-                                    <p class="eyebrow">Output & API</p>
-                                    <h2>&#x6267;&#x884C;&#x3001;&#x4E0B;&#x8F7D;&#x4E0E;&#x540E;&#x7AEF;&#x63A5;&#x53E3;</h2>
-                                    <p class="panel-text">&#x8FD9;&#x91CC;&#x53EA;&#x4FDD;&#x7559;&#x751F;&#x6210; MIDI&#x3001;&#x5728;&#x7EBF;&#x8BD5;&#x542C;&#x3001;&#x4E0B;&#x8F7D; MIDI &#x4E0E;&#x5F00;&#x59CB;&#x8BC4;&#x4F30;&#x8FD9;&#x56DB;&#x4E2A;&#x6838;&#x5FC3;&#x52A8;&#x4F5C;&#x3002;</p>
-                                </div>
-                                <div class="panel-tags" aria-hidden="true">
-                                    <span class="tag">Playback</span>
-                                    <span class="tag">API</span>
-                                    <span class="tag">Generate</span>
-                                </div>
+                            <div class="field span-mode-manual-field is-disabled" aria-disabled="true">
+                                <label for="pitch-1">Pitch 1 （高）: </label>
+                                <input type="number" id="pitch-1" min="0" max="127" value="74" disabled />
+                                <div class="field-error" id="pitch-1-error"></div>
                             </div>
-
-                            <div class="execution-grid">
-                                <div class="stack">
-                                    <div class="field full-width">
-                                        <label class="field-label" for="api-base-url">
-                                            <span>后端 API 地址</span>
-                                        </label>
-                                        <input type="text" id="api-base-url" value="" placeholder="默认自动读取，也可手动填写完整地址">
-                                        <p class="field-hint">一般情况下保持默认地址即可。</p>
-                                        <div class="field-error" id="api-base-url-error"></div>
-                                    </div>
-
-                                    <div class="status-banner" id="prefs-feedback" data-tone="neutral" aria-live="polite">
-                                        请先生成 MIDI。生成成功后可直接试听、下载，并开始评估。
-                                    </div>
-
-                                    <div class="response-card midi-player-panel" id="midi-player-panel" hidden>
-                                        <h3>生成结果试听</h3>
-                                        <p class="status-copy" id="midi-player-copy">点击播放试听当前生成的 MIDI。</p>
-                                        <div class="midi-player-shell">
-                                            <midi-player id="midi-player" sound-font></midi-player>
-                                        </div>
-                                    </div>
-
-                                    <div class="response-card" id="backend-response-panel" hidden>
-                                        <h3 id="backend-response-title">最近一次接口响应</h3>
-                                        <div class="check-grid response-summary" id="backend-result-summary" hidden>
-                                            <div class="check-card">
-                                                <span class="status-pill status-pill--neutral" id="pipeline-overall-pill">未执行</span>
-                                                <strong>流水线状态</strong>
-                                                <p id="pipeline-overall-copy">还没有发起生成或评估。</p>
-                                            </div>
-                                            <div class="check-card">
-                                                <span class="status-pill status-pill--neutral" id="pipeline-generation-pill">未执行</span>
-                                                <strong>生成结果</strong>
-                                                <p id="pipeline-generation-copy">等待生成。</p>
-                                            </div>
-                                            <div class="check-card">
-                                                <span class="status-pill status-pill--neutral" id="pipeline-evaluation-pill">未执行</span>
-                                                <strong>评估结果</strong>
-                                                <p id="pipeline-evaluation-copy">等待评估。</p>
-                                            </div>
-                                        </div>
-                                        <ul class="contract-list response-links" id="backend-result-links" hidden></ul>
-                                    </div>
-                                </div>
-
-                                <div class="stack">
-                                    <div class="summary-card">
-                                        <p class="eyebrow">Actions</p>
-                                        <h3>执行操作</h3>
-                                        <p class="status-copy">当前流程只保留生成 MIDI、下载 MIDI、开始评估；发起生成前请先选择 EEG CSV 文件。</p>
-                                        <div class="action-row">
-                                            <button class="btn btn--primary btn--wide" type="button" id="generate-music">生成 MIDI</button>
-                                            <button class="btn btn--secondary btn--wide" type="button" id="download-midi" hidden>下载 MIDI</button>
-                                            <button class="btn btn--ghost btn--wide" type="button" id="start-evaluation">开始评估</button>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="field span-mode-manual-field is-disabled" aria-disabled="true">
+                                <label for="pitch-2">Pitch 2 （中）: </label>
+                                <input type="number" id="pitch-2" min="0" max="127" value="66" disabled />
+                                <div class="field-error" id="pitch-2-error"></div>
                             </div>
-                        </section>
-                    </form>
-                </div>
-
-                <aside class="workspace-side">
-                    <section class="summary-card">
-                        <p class="eyebrow">Realtime Summary</p>
-                        <h2>当前配置概览</h2>
-                        <p class="status-copy" id="draft-note">&#x8BF7;&#x5148;&#x9009;&#x62E9; EEG &#x6587;&#x4EF6;&#xFF0C;&#x518D;&#x751F;&#x6210; MIDI&#x3002;</p>
-                        <ul class="summary-list" id="prefs-summary"></ul>
-
-                        <div class="check-grid">
-                            <div class="check-card">
-                                <span class="status-pill status-pill--neutral" id="check-file-pill">未选择</span>
-                                <strong>EEG 文件</strong>
-                                <p id="check-file-copy">还没有导入本次生成所需的 EEG CSV。</p>
+                            <div class="field span-mode-manual-field is-disabled" aria-disabled="true">
+                                <label for="pitch-3">Pitch 3 （低）: </label>
+                                <input type="number" id="pitch-3" min="0" max="127" value="58" disabled />
+                                <div class="field-error" id="pitch-3-error"></div>
                             </div>
-                            <div class="check-card">
-                                <span class="status-pill status-pill--neutral" id="check-validation-pill">待校验</span>
-                                <strong>参数校验</strong>
-                                <p id="check-validation-copy">修改字段后，系统会自动更新校验状态。</p>
+                            <div class="field">
+                                <label for="dynamics-preset">力度预设：</label>
+                                <select id="dynamics-preset">
+                                    <option value="Light">柔和</option>
+                                    <option value="Standard">标准</option>
+                                    <option value="Strong">强烈</option>
+                                    <option value="Custom">手动</option>
+                                </select>
+                                <div class="field-error" id="dynamics-preset-error"></div>
                             </div>
-                            <div class="check-card">
-                                <span class="status-pill status-pill--neutral" id="check-backend-pill">未检查</span>
-                                <strong>后端连接</strong>
-                                <p id="check-backend-copy">&#x751F;&#x6210;&#x548C;&#x8BC4;&#x4F30;&#x53D1;&#x8D77;&#x65F6;&#x4F1A;&#x81EA;&#x52A8;&#x66F4;&#x65B0;&#x5F53;&#x524D;&#x540E;&#x7AEF;&#x72B6;&#x6001;&#x3002;</p>
+                            <div class="field dynamics-manual-field is-disabled" aria-disabled="true">
+                                <label for="vel-1">Vel 1:</label>
+                                <input type="number" id="vel-1" min="1" max="127" value="90" disabled />
+                                <div class="field-error" id="vel-1-error"></div>
+                            </div>
+                            <div class="field dynamics-manual-field is-disabled" aria-disabled="true">
+                                <label for="vel-2">Vel 2:</label>
+                                <input type="number" id="vel-2" min="1" max="127" value="70" disabled />
+                                <div class="field-error" id="vel-2-error"></div>
+                            </div>
+                            <div class="field dynamics-manual-field is-disabled" aria-disabled="true">
+                                <label for="vel-3">Vel 3:</label>
+                                <input type="number" id="vel-3" min="1" max="127" value="55" disabled />
+                                <div class="field-error" id="vel-3-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="magnet">磁力: <span id="magnet-value">4</span></label>
+                                <input type="range" id="magnet" min="0" max="12" value="4"/>
+                                <div class="field-error" id="magnet-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="loudness-offset">整体响度偏移: <span id="loudness-offset-value">0</span></label>
+                                <input type="range" id="loudness-offset" min="-30" max="30" value="0" />
+                                <div class="field-error" id="loudness-offset-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="dynamics-limit-strategy">力度上限策略：</label>
+                                <select id="dynamics-limit-strategy">
+                                    <option value="Conservative">保守</option>
+                                    <option value="Balanced">平衡</option>
+                                    <option value="Aggressive">激进</option>
+                                </select>
+                                <div class="field-error" id="dynamics-limit-strategy-error"></div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </section>
+            <section class="hero" aria-labelledby="module3-title">
+                <canvas id="bgCanvas3" role="img" aria-hidden="true"></canvas>
+                <div class="hero-content">
+                    <h3 id="module3-title" class="section-title">高级参数</h3>
+                    <div class="actions">
+                        <div class="preferences-form">
+                            <div class="field">
+                                <label for="rhythm-quantization">节奏量化：</label>
+                                <select id="rhythm-quantization">
+                                    <option value="Off">Off</option>
+                                    <option value="1/8">1/8</option>
+                                    <option value="1/16">1/16</option>
+                                    <option value="1/32">1/32</option>
+                                </select>
+                                <div class="field-error" id="rhythm-quantization-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="swing-amount">摆动程度 <span id="swing-amount-value">0.12</span></label>
+                                <input type="range" id="swing-amount" min="0.00" max="0.60" step="0.01" value="0.12" />
+                                <div class="field-error" id="swing-amount-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="note-duration-multiplier">音符时值倍率: <span id="note-duration-multiplier-value">1.2</span></label>
+                                <input type="range" id="note-duration-multiplier" min="0.25" max="2.5" step="0.05" value="1.2" />
+                                <div class="field-error" id="note-duration-multiplier-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="sparsity">稀疏化：</label>
+                                <select id="sparsity">
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                </select>
+                                <div class="field-error" id="sparsity-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="scale-constraint">音阶约束：</label>
+                                <select id="scale-constraint">
+                                    <option value="Diatonic">Diatonic</option>
+                                    <option value="Chromatic">Chromatic</option>
+                                    <option value="Penta">Penta</option>
+                                </select>
+                                <div class="field-error" id="scale-constraint-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="pitch-coherence">修音连贯程度：</label>
+                                <select id="pitch-coherence">
+                                    <option value="None">None</option>
+                                    <option value="FX1">FX1</option>
+                                    <option value="FX2">FX2</option>
+                                    <option value="FX3">FX3</option>
+                                    <option value="FX4">FX4</option>
+                                </select>
+                                <div class="field-error" id="pitch-coherence-error"></div>
+                            </div>
+
+                            <div class="field">
+                                <label for="pitch-range-min">音域下限 = <span id="pitch-range-min-value">48</span></label>
+                                <input type="range" id="pitch-range-min" min="12" max="84" value="48" />
+                                <div class="field-error" id="pitch-range-min-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="pitch-range-max">音域上限 = <span id="pitch-range-max-value">84</span></label>
+                                <input type="range" id="pitch-range-max" min="48" max="120" value="84" />
+                                <div class="field-error" id="pitch-range-max-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="max-leap">允许最大跳跃: <span id="max-leap-value">9</span></label>
+                                <input type="range" id="max-leap" min="3" max="24" value="9" />
+                                <div class="field-error" id="max-leap-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="transpose">整体转调 半音: <span id="transpose-value">0</span></label>
+                                <input type="range" id="transpose" min="-10" max="10" value="0" />
+                                <div class="field-error" id="transpose-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="melody-min-velocity">主旋律最小力度: <span id="melody-min-velocity-value">45</span></label>
+                                <input type="range" id="melody-min-velocity" min="30" max="60" value="45" />
+                                <div class="field-error" id="melody-min-velocity-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="melody-max-velocity">主旋律最大力度: <span id="melody-max-velocity-value">90</span></label>
+                                <input type="range" id="melody-max-velocity" min="75" max="105" value="90" />
+                                <div class="field-error" id="melody-max-velocity-error"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="hero" aria-labelledby="module4-title">
+                <canvas id="bgCanvas4" role="img" aria-hidden="true"></canvas>
+                <div class="hero-content">
+                    <h3 id="module4-title" class="section-title">和弦设置</h3>
+                    <div class="actions">
+                        <div class="preferences-form">
+                            <div class="field checkbox-field">
+                                <input type="checkbox" id="chord-track-enabled" />
+                                <label for="chord-track-enabled">附加和弦轨</label>
+                                <div class="field-error" id="chord-track-enabled-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="key-root">调性根音：</label>
+                                <select id="key-root">
+                                    <option value="Auto">自动</option>
+                                    <option value="C">C</option>
+                                    <option value="C#">C#</option>
+                                    <option value="D">D</option>
+                                    <option value="D#">D#</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="F#">F#</option>
+                                    <option value="G">G</option>
+                                    <option value="G#">G#</option>
+                                    <option value="A">A</option>
+                                    <option value="A#">A#</option>
+                                    <option value="B">B</option>
+                                </select>
+                                <div class="field-error" id="key-root-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="major-minor">大小调：</label>
+                                <select id="major-minor">
+                                    <option value="Auto">自动</option>
+                                    <option value="Major">大调</option>
+                                    <option value="Minor">小调</option>
+                                </select>
+                                <div class="field-error" id="major-minor-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="emotion">情绪：</label>
+                                <select id="emotion">
+                                    <option value="Calm">平静</option>
+                                    <option value="Excited">兴奋</option>
+                                    <option value="Sad">伤感</option>
+                                    <option value="Tense">紧张</option>
+                                </select>
+                                <div class="field-error" id="emotion-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="chord-style">和弦风格：</label>
+                                <select id="chord-style">
+                                    <option value="Block">Block</option>
+                                    <option value="Arp">Arp</option>
+                                </select>
+                                <div class="field-error" id="chord-style-error"></div>
+                            </div>
+
+                            <div class="field">
+                                <label for="chord-change-frequency">和弦更换频率: <span id="chord-change-frequency-value">8</span></label>
+                                <input type="range" id="chord-change-frequency" min="1" max="32" value="8" />
+                                <div class="field-error" id="chord-change-frequency-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="chord-octave-offset">和弦八度偏移: <span id="chord-octave-offset-value">0</span></label>
+                                <input type="range" id="chord-octave-offset" min="-2" max="2" value="0" />
+                                <div class="field-error" id="chord-octave-offset-error"></div>
+                            </div>
+                            <div class="field">
+                                <label for="chord-velocity">和弦力度: <span id="chord-velocity-value">55</span></label>
+                                <input type="range" id="chord-velocity" min="20" max="90" value="55" />
+                                <div class="field-error" id="chord-velocity-error"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="hero" aria-labelledby="module5-title">
+                <canvas id="bgCanvas5" role="img" aria-hidden="true"></canvas>
+                <div class="hero-content">
+                    <h3 id="module5-title" class="section-title">输出与执行</h3>
+                    <section id="preferences-summary" class="simple-panel" aria-labelledby="prefs-summary-title">
+                        <h3 id="prefs-summary-title">已保存偏好</h3>
+                        <p id="prefs-summary" class="simple-note">尚未保存任何偏好。</p>
                     </section>
-
-                </aside>
-            </div>
+                    <div class="button-group">
+                        <button class="btn save-btn" id="save-prefs" type="button">保存偏好</button>
+                        <button class="btn clear-btn" id="clear-prefs" type="button">清除已保存数据</button>
+                    </div>
+                    <p id="prefs-feedback" class="simple-note" aria-live="polite"></p>
+                    <div class="actions">
+                        <div class="preferences-form">
+                            <div class="button-stack full-width">
+                                <button type="button" id="generate-music" class="btn primary-btn">生成 MIDI</button>
+                                <button type="button" id="download-midi" class="btn secondary-btn" hidden>下载 MIDI</button>
+                                <button type="button" id="start-evaluation" class="btn secondary-btn" disabled>开始评估</button>
+                            </div>
+                        </div>
+                    </div>
+                    <section id="runtime-result-panel" class="simple-panel" hidden>
+                        <h3>运行结果</h3>
+                        <p id="generation-status" class="simple-note">尚未生成 MIDI。</p>
+                        <p id="evaluation-status" class="simple-note">尚未开始评估。</p>
+                        <div id="midi-player-panel" hidden>
+                            <p class="simple-note">生成结果试听</p>
+                            <p class="simple-note">点击播放试听当前生成的 MIDI。</p>
+                            <midi-player id="midi-player" sound-font style="width:100%;"></midi-player>
+                        </div>
+                        <ul id="result-links" class="simple-note" hidden></ul>
+                    </section>
+                </div>
+            </section>
         </main>
-
-        <footer class="site-footer">
-            <p>&#x53C2;&#x6570;&#x5DE5;&#x4F5C;&#x53F0;&#x4F1A;&#x628A;&#x53C2;&#x6570;&#x8BBE;&#x7F6E;&#x3001;MIDI &#x751F;&#x6210;&#x3001;&#x5728;&#x7EBF;&#x8BD5;&#x542C;&#x3001;&#x4E0B;&#x8F7D;&#x4E0E;&#x8BC4;&#x4F30;&#x53D1;&#x8D77;&#x7EDF;&#x4E00;&#x653E;&#x5728;&#x540C;&#x4E00;&#x4E2A;&#x9875;&#x9762;&#x91CC;&#x5904;&#x7406;&#x3002;</p>
-            <p>EMMA-Q · The Brainwave Alpha Project</p>
-        </footer>
     </div>
+    <script>
+        (function(){
+            const storageKey = 'simplePrefs';
+            const summary = document.getElementById('prefs-summary');
+            const feedback = document.getElementById('prefs-feedback');
+            const fromEl = document.getElementById('from-genre');
+            const elements = {
+                eegFile: document.getElementById('eeg-file'),
+                dropZone: document.getElementById('drop-zone'),
+                startTime: document.getElementById('start-time'),
+                duration: document.getElementById('duration'),
+                samplingRate: document.getElementById('sampling-rate'),
+                samplingRateValue: document.getElementById('sampling-rate-value'),
+                maxPoints: document.getElementById('max-points'),
+                melodyChannel: document.getElementById('melody-channel'),
+                melodyChannelValue: document.getElementById('melody-channel-value'),
+                rule: document.getElementById('rule'),
+                timeSignature: document.getElementById('time-signature'),
+                pitchCenter: document.getElementById('pitch-center'),
+                pitchCenterValue: document.getElementById('pitch-center-value'),
+                span: document.getElementById('span'),
+                spanValue: document.getElementById('span-value'),
+                magnet: document.getElementById('magnet'),
+                magnetValue: document.getElementById('magnet-value'),
+                spanMode: document.getElementById('span-mode'),
+                pitch1: document.getElementById('pitch-1'),
+                pitch2: document.getElementById('pitch-2'),
+                pitch3: document.getElementById('pitch-3'),
+                dynamicsPreset: document.getElementById('dynamics-preset'),
+                vel1: document.getElementById('vel-1'),
+                vel2: document.getElementById('vel-2'),
+                vel3: document.getElementById('vel-3'),
+                loudnessOffset: document.getElementById('loudness-offset'),
+                loudnessOffsetValue: document.getElementById('loudness-offset-value'),
+                dynamicsLimitStrategy: document.getElementById('dynamics-limit-strategy'),
+                pitchCoherence: document.getElementById('pitch-coherence'),
+                scaleConstraint: document.getElementById('scale-constraint'),
+                rhythmQuantization: document.getElementById('rhythm-quantization'),
+                swingAmount: document.getElementById('swing-amount'),
+                swingAmountValue: document.getElementById('swing-amount-value'),
+                pitchRangeMin: document.getElementById('pitch-range-min'),
+                pitchRangeMinValue: document.getElementById('pitch-range-min-value'),
+                pitchRangeMax: document.getElementById('pitch-range-max'),
+                pitchRangeMaxValue: document.getElementById('pitch-range-max-value'),
+                maxLeap: document.getElementById('max-leap'),
+                maxLeapValue: document.getElementById('max-leap-value'),
+                transpose: document.getElementById('transpose'),
+                transposeValue: document.getElementById('transpose-value'),
+                melodyMinVelocity: document.getElementById('melody-min-velocity'),
+                melodyMinVelocityValue: document.getElementById('melody-min-velocity-value'),
+                melodyMaxVelocity: document.getElementById('melody-max-velocity'),
+                melodyMaxVelocityValue: document.getElementById('melody-max-velocity-value'),
+                noteDurationMultiplier: document.getElementById('note-duration-multiplier'),
+                noteDurationMultiplierValue: document.getElementById('note-duration-multiplier-value'),
+                sparsity: document.getElementById('sparsity'),
+                chordTrackEnabled: document.getElementById('chord-track-enabled'),
+                emotion: document.getElementById('emotion'),
+                chordChangeFrequency: document.getElementById('chord-change-frequency'),
+                chordChangeFrequencyValue: document.getElementById('chord-change-frequency-value'),
+                chordStyle: document.getElementById('chord-style'),
+                chordVelocity: document.getElementById('chord-velocity'),
+                chordVelocityValue: document.getElementById('chord-velocity-value'),
+                chordOctaveOffset: document.getElementById('chord-octave-offset'),
+                chordOctaveOffsetValue: document.getElementById('chord-octave-offset-value'),
+                keyRoot: document.getElementById('key-root'),
+                majorMinor: document.getElementById('major-minor'),
+                saveButton: document.getElementById('save-prefs'),
+                clearButton: document.getElementById('clear-prefs'),
+                generateButton: document.getElementById('generate-music'),
+            };
+            function formatNumber(num){
+                return typeof num === 'number' ? num.toLocaleString() : num;
+            }
+            const RANGE_LIMITS = {
+                pitchRangeMin: { min: 12, max: 84, defaultValue: 48 },
+                pitchRangeMax: { min: 48, max: 120, defaultValue: 84 },
+            };
+            function normalizeOptionValue(v){
+                if(v == null) return v;
+                if(typeof v !== 'string') return v;
+                if(v.length === 0) return v;
+                // 如果以字母开头，则首字母大写
+                return /^[a-zA-Z]/.test(v) ? v.charAt(0).toUpperCase() + v.slice(1) : v;
+            };
+            function normalizeScaleConstraint(value){
+                const normalized = normalizeOptionValue(value);
+                if(normalized === 'Option2') return 'Chromatic';
+                if(normalized === 'Option3') return 'Penta';
+                return normalized;
+            };
+            function clampValue(value, min, max, fallback){
+                const numericValue = Number(value);
+                if(Number.isNaN(numericValue)) return fallback;
+                return Math.min(max, Math.max(min, numericValue));
+            };
+            function applyRangeLimits(){
+                if(elements.pitchRangeMin){
+                    elements.pitchRangeMin.min = String(RANGE_LIMITS.pitchRangeMin.min);
+                    elements.pitchRangeMin.max = String(RANGE_LIMITS.pitchRangeMin.max);
+                }
+                if(elements.pitchRangeMax){
+                    elements.pitchRangeMax.min = String(RANGE_LIMITS.pitchRangeMax.min);
+                    elements.pitchRangeMax.max = String(RANGE_LIMITS.pitchRangeMax.max);
+                };
+            };
+            function setFeedback(message, isError){
+                if(!feedback) return;
+                feedback.textContent = message || '';
+                feedback.style.color = isError ? '#ff9b9b' : '#9bd7d7';
+            };
+            function hasValidEegFile(){
+                const eegFileName = elements.eegFile?.dataset?.fileName || '';
+                return Boolean(eegFileName) && eegFileName.toLowerCase().endsWith('.csv');
+            };
+            function updateActionButtons(){
+                if(elements.saveButton){
+                    const canSave = hasValidEegFile();
+                    elements.saveButton.disabled = !canSave;
+                    elements.saveButton.title = canSave ? '' : '请先上传 EEG 文件';
+                }
+                if(elements.generateButton){
+                    elements.generateButton.disabled = false;
+                    elements.generateButton.title = '';
+                }
+            };
+            function load(){
+                const params = new URLSearchParams(window.location.search);
+                const from = params.get('genre');
+                if(from && fromEl){
+                    const decoded = decodeURIComponent(from);
+                    fromEl.textContent = `您从上一步选择了：${decoded}`;
+                    try{ localStorage.setItem('selectedGenre', decoded); }catch(e){}
+                } else {
+                    const stored = localStorage.getItem('selectedGenre');
+                    if(stored && fromEl){ fromEl.textContent = `您从上一步选择了：${stored}`; }
+                }
+                let saved = {};
+                try {
+                    saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+                } catch (e) {
+                    console.warn('读取已保存偏好失败，已回退为默认值', e);
+                    saved = {};
+                }
+                resetToDefaults();
+                applyValues(saved);
+                updateSummary(saved);
+                setFeedback('', false);
+            };
+            function applyValues(saved){
+                if(!saved) return;
+                if(saved.eegFileName && elements.eegFile){
+                    elements.eegFile.dataset.fileName = saved.eegFileName;
+                    updateDropZoneLabel(saved.eegFileName);
+                }
+                if(elements.startTime){
+                    elements.startTime.value = saved.startTime || elements.startTime.min;
+                }
+                if(elements.duration){
+                    elements.duration.value = saved.duration || elements.duration.min;
+                }
+                if(elements.samplingRate){
+                    elements.samplingRate.value = saved.samplingRate ?? 64;
+                    elements.samplingRateValue.textContent = elements.samplingRate.value;
+                }
+                if(elements.maxPoints){
+                    elements.maxPoints.value = saved.maxPoints || elements.maxPoints.min;
+                }
+                if(elements.melodyChannel){
+                    elements.melodyChannel.value = saved.melodyChannel || elements.melodyChannel.min;
+                    elements.melodyChannelValue.textContent = elements.melodyChannel.value;
+                }
+                if(elements.rule){
+                    elements.rule.value = saved.rule || 'Rule1';
+                }
+                if(elements.timeSignature){
+                    elements.timeSignature.value = saved.timeSignature || '4/4';
+                }
+                if(elements.pitchCenter){
+                    elements.pitchCenter.value = saved.pitchCenter || 66;
+                    elements.pitchCenterValue.textContent = elements.pitchCenter.value;
+                }
+                if(elements.span){
+                    elements.span.value = saved.span || 8;
+                    elements.spanValue.textContent = elements.span.value;
+                }
+                    if(elements.spanMode){
+                        elements.spanMode.value = normalizeOptionValue(saved.spanMode) || 'Mode1';
+                        toggleSpanModeFields((elements.spanMode.value || '').toLowerCase());
+                    }
+                if(elements.pitch1){
+                    elements.pitch1.value = saved.pitch1 || 74;
+                }
+                if(elements.pitch2){
+                    elements.pitch2.value = saved.pitch2 || 66;
+                }
+                if(elements.pitch3){
+                    elements.pitch3.value = saved.pitch3 || 58;
+                }
+                if(elements.magnet){
+                    elements.magnet.value = saved.magnet || 4;
+                    elements.magnetValue.textContent = elements.magnet.value;
+                }
+                if(elements.dynamicsPreset){
+                    const currentPreset = normalizeOptionValue(saved.dynamicsPreset) || elements.dynamicsPreset?.value || 'Standard';
+                    if(elements.dynamicsPreset) elements.dynamicsPreset.value = currentPreset;
+                    toggleDynamicsFields(currentPreset);
+                }
+                if(elements.vel1){
+                    elements.vel1.value = saved.vel1 || 90;
+                }
+                if(elements.vel2){
+                    elements.vel2.value = saved.vel2 || 70;
+                }
+                if(elements.vel3){
+                    elements.vel3.value = saved.vel3 || 55;
+                }
+                if(elements.loudnessOffset){
+                    elements.loudnessOffset.value = saved.loudnessOffset || 0;
+                    elements.loudnessOffsetValue.textContent = elements.loudnessOffset.value;
+                }
+                if(elements.dynamicsLimitStrategy){
+                    elements.dynamicsLimitStrategy.value = normalizeOptionValue(saved.dynamicsLimitStrategy) || 'Balanced';
+                }
+                if(elements.pitchCoherence){
+                    elements.pitchCoherence.value = normalizeOptionValue(saved.pitchCoherence) || 'None';
+                }
+                if(elements.scaleConstraint){
+                    elements.scaleConstraint.value = normalizeScaleConstraint(saved.scaleConstraint) || 'Diatonic';
+                }
+                if(elements.rhythmQuantization){
+                    elements.rhythmQuantization.value = saved.rhythmQuantization || 'Off';
+                }
+                if(elements.swingAmount){
+                    elements.swingAmount.value = saved.swingAmount ?? 0.12;
+                    elements.swingAmountValue.textContent = elements.swingAmount.value;
+                }
+                if(elements.pitchRangeMin){
+                    elements.pitchRangeMin.value = clampValue(
+                        saved.pitchRangeMin,
+                        RANGE_LIMITS.pitchRangeMin.min,
+                        RANGE_LIMITS.pitchRangeMin.max,
+                        RANGE_LIMITS.pitchRangeMin.defaultValue
+                    );
+                    elements.pitchRangeMinValue.textContent = elements.pitchRangeMin.value;
+                }
+                if(elements.pitchRangeMax){
+                    elements.pitchRangeMax.value = clampValue(
+                        saved.pitchRangeMax,
+                        RANGE_LIMITS.pitchRangeMax.min,
+                        RANGE_LIMITS.pitchRangeMax.max,
+                        RANGE_LIMITS.pitchRangeMax.defaultValue
+                    );
+                    elements.pitchRangeMaxValue.textContent = elements.pitchRangeMax.value;
+                }
+                if(elements.maxLeap){
+                    elements.maxLeap.value = saved.maxLeap ?? 9;
+                    elements.maxLeapValue.textContent = elements.maxLeap.value;
+                }
+                if(elements.transpose){
+                    elements.transpose.value = saved.transpose ?? 0;
+                    elements.transposeValue.textContent = elements.transpose.value;
+                }
+                if(elements.melodyMinVelocity){
+                    elements.melodyMinVelocity.value = saved.melodyMinVelocity ?? 45;
+                    elements.melodyMinVelocityValue.textContent = elements.melodyMinVelocity.value;
+                }
+                if(elements.melodyMaxVelocity){
+                    elements.melodyMaxVelocity.value = saved.melodyMaxVelocity ?? 90;
+                    elements.melodyMaxVelocityValue.textContent = elements.melodyMaxVelocity.value;
+                }
+                if(elements.noteDurationMultiplier){
+                    elements.noteDurationMultiplier.value = saved.noteDurationMultiplier ?? 1.2;
+                    elements.noteDurationMultiplierValue.textContent = elements.noteDurationMultiplier.value;
+                }
+                if(elements.sparsity){
+                    elements.sparsity.value = saved.sparsity ?? '0';
+                }
+                if(elements.chordTrackEnabled){
+                    elements.chordTrackEnabled.checked = Boolean(saved.chordTrackEnabled);
+                }
+                if(elements.emotion){
+                    elements.emotion.value = normalizeOptionValue(saved.emotion) || 'Calm';
+                }
+                if(elements.chordChangeFrequency){
+                    elements.chordChangeFrequency.value = saved.chordChangeFrequency ?? 8;
+                    elements.chordChangeFrequencyValue.textContent = elements.chordChangeFrequency.value;
+                }
+                if(elements.chordStyle){
+                    elements.chordStyle.value = normalizeOptionValue(saved.chordStyle) || 'Block';
+                }
+                if(elements.chordVelocity){
+                    elements.chordVelocity.value = saved.chordVelocity ?? 55;
+                    elements.chordVelocityValue.textContent = elements.chordVelocity.value;
+                }
+                if(elements.chordOctaveOffset){
+                    elements.chordOctaveOffset.value = saved.chordOctaveOffset ?? 0;
+                    elements.chordOctaveOffsetValue.textContent = elements.chordOctaveOffset.value;
+                }
+                if(elements.keyRoot){
+                    elements.keyRoot.value = saved.keyRoot || 'Auto';
+                }
+                if(elements.majorMinor){
+                    elements.majorMinor.value = saved.majorMinor || 'Auto';
+                }
+                if(elements.outputDirectory){
+                    elements.outputDirectory.value = saved.outputDirectory || '';
+                }
+            }
+            function updateDropZoneLabel(fileName){
+                if(!elements.dropZone) return;
+                const label = fileName ? `已选择文件：${fileName}` : '拖拽文件到此处，或选择本地文件';
+                const labelEl = elements.dropZone.querySelector('.drop-zone__label');
+                if(labelEl) labelEl.textContent = label;
+            };
+            function stringifyIniValue(value){
+                if(typeof value === 'boolean') return value ? 'true' : 'false';
+                if(value == null) return '';
+                return String(value);
+            };
+            function buildIniContent(prefs){
+                const sections = [
+                    ['input', {
+                        eeg_file: prefs.eegFileName || '',
+                        start_time: prefs.startTime,
+                        duration: prefs.duration,
+                        sampling_rate: prefs.samplingRate,
+                        max_points: prefs.maxPoints,
+                        melody_channel: prefs.melodyChannel,
+                    }],
+                    ['rule', {
+                        rule: prefs.rule,
+                        time_signature: prefs.timeSignature,
+                        pitch_center: prefs.pitchCenter,
+                        span: prefs.span,
+                        span_mode: prefs.spanMode,
+                        pitch_1: prefs.pitch1,
+                        pitch_2: prefs.pitch2,
+                        pitch_3: prefs.pitch3,
+                        magnet: prefs.magnet,
+                    }],
+                    ['dynamics', {
+                        preset: prefs.dynamicsPreset,
+                        vel_1: prefs.vel1,
+                        vel_2: prefs.vel2,
+                        vel_3: prefs.vel3,
+                        loudness_offset: prefs.loudnessOffset,
+                        limit_strategy: prefs.dynamicsLimitStrategy,
+                    }],
+                    ['advanced', {
+                        rhythm_quantization: prefs.rhythmQuantization,
+                        pitch_coherence: prefs.pitchCoherence,
+                        swing_amount: prefs.swingAmount,
+                        note_duration_multiplier: prefs.noteDurationMultiplier,
+                        sparsity: prefs.sparsity,
+                        scale_constraint: prefs.scaleConstraint,
+                        melody_min_velocity: prefs.melodyMinVelocity,
+                        melody_max_velocity: prefs.melodyMaxVelocity,
+                    }],
+                    ['chord', {
+                        chord_track_enabled: prefs.chordTrackEnabled,
+                        key_root: prefs.keyRoot,
+                        major_minor: prefs.majorMinor,
+                        emotion: prefs.emotion,
+                        chord_style: prefs.chordStyle,
+                        chord_change_frequency: prefs.chordChangeFrequency,
+                        chord_octave_offset: prefs.chordOctaveOffset,
+                        chord_velocity: prefs.chordVelocity,
+                    }],
+                ];
+                return sections.map(([name, values]) => {
+                    const lines = [`[${name}]`];
+                    Object.entries(values).forEach(([key, value]) => {
+                        lines.push(`${key}=${stringifyIniValue(value)}`);
+                    });
+                    return lines.join('\n');
+                }).join('\n\n');
+            };
+            function downloadIniFile(filename, content){
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                URL.revokeObjectURL(url);
+            };
+            function exportPrefsAsIni(){
+                const prefs = gatherPrefs();
+
+                const timestamp = new Date().toISOString().replace(/[:T]/g, '-').slice(0, 19);
+                const filename = `emma-q-preferences-${timestamp}.ini`;
+                const iniContent = buildIniContent(prefs);
+                downloadIniFile(filename, iniContent);
+                setFeedback(`已导出 ${filename} 到默认下载目录。`, false);
+            };
+            function gatherPrefs(){
+                return {
+                    eegFileName: elements.eegFile?.dataset?.fileName || '',
+                    startTime: Number(elements.startTime?.value || 0),
+                    duration: Number(elements.duration?.value || 30),
+                    timeSignature: elements.timeSignature?.value || '4/4',
+                    pitchCenter: Number(elements.pitchCenter?.value || 66),
+                    span: Number(elements.span?.value || 8),
+                    spanMode: elements.spanMode?.value || 'Mode1',
+                    pitch1: Number(elements.pitch1?.value || 74),
+                    pitch2: Number(elements.pitch2?.value || 66),
+                    pitch3: Number(elements.pitch3?.value || 58),
+                    magnet: Number(elements.magnet?.value || 4),
+                    dynamicsPreset: elements.dynamicsPreset?.value || 'Standard',
+                    vel1: Number(elements.vel1?.value || 90),
+                    vel2: Number(elements.vel2?.value || 70),
+                    vel3: Number(elements.vel3?.value || 55),
+                    loudnessOffset: Number(elements.loudnessOffset?.value || 0),
+                    dynamicsLimitStrategy: elements.dynamicsLimitStrategy?.value || 'Balanced',
+                    pitchCoherence: elements.pitchCoherence?.value || 'None',
+                    scaleConstraint: elements.scaleConstraint?.value || 'Diatonic',
+                    rhythmQuantization: elements.rhythmQuantization?.value || 'Off',
+                    swingAmount: Number(elements.swingAmount?.value || 0.12),
+                    pitchRangeMin: Number(elements.pitchRangeMin?.value || 48),
+                    pitchRangeMax: Number(elements.pitchRangeMax?.value || 84),
+                    maxLeap: Number(elements.maxLeap?.value || 9),
+                    transpose: Number(elements.transpose?.value || 0),
+                    melodyMinVelocity: Number(elements.melodyMinVelocity?.value || 45),
+                    melodyMaxVelocity: Number(elements.melodyMaxVelocity?.value || 90),
+                    noteDurationMultiplier: Number(elements.noteDurationMultiplier?.value || 1.2),
+                    sparsity: elements.sparsity?.value || '0',
+                    chordTrackEnabled: elements.chordTrackEnabled?.checked || false,
+                    emotion: elements.emotion?.value || 'Calm',
+                    chordChangeFrequency: Number(elements.chordChangeFrequency?.value || 8),
+                    chordStyle: elements.chordStyle?.value || 'Block',
+                    chordVelocity: Number(elements.chordVelocity?.value || 55),
+                    chordOctaveOffset: Number(elements.chordOctaveOffset?.value || 0),
+                    keyRoot: elements.keyRoot?.value || 'Auto',
+                    majorMinor: elements.majorMinor?.value || 'Auto',
+                };
+            };
+            function validatePrefs(){
+                const errors = {};
+                // 检查EEG文件
+                const eegFileName = elements.eegFile?.dataset?.fileName || '';
+                if (!eegFileName) {
+                    errors['eeg-file'] = '请先导入EEG数据文件（CSV格式）';
+                } else if (!eegFileName.toLowerCase().endsWith('.csv')) {
+                    errors['eeg-file'] = 'EEG文件必须是CSV格式';
+                }
+                // 检查开始时间
+                const startTime = Number(elements.startTime?.value || 0);
+                if (isNaN(startTime) || startTime < 0 || startTime > 120) {
+                    errors['start-time'] = '开始时间必须在0-120秒之间';
+                }
+                // 检查时长
+                const duration = Number(elements.duration?.value || 30);
+                if (isNaN(duration) || duration < 30 || duration > 120) {
+                    errors['duration'] = '时长必须在30-120秒之间';
+                }
+                // 检查采样率
+                const samplingRate = Number(elements.samplingRate?.value || 64);
+                if (isNaN(samplingRate) || samplingRate < 16 || samplingRate > 128) {
+                    errors['sampling-rate'] = '目标采样率必须在16-128Hz之间';
+                }
+                // 检查最大点数
+                const maxPoints = Number(elements.maxPoints?.value || 8000);
+                if (isNaN(maxPoints) || maxPoints < 1000 || maxPoints > 30000) {
+                    errors['max-points'] = '最大点数必须在1000-30000之间';
+                }
+                // 检查主旋律通道
+                const melodyChannel = Number(elements.melodyChannel?.value || 0);
+                if (isNaN(melodyChannel) || melodyChannel < 0 || melodyChannel > 6) {
+                    errors['melody-channel'] = '主旋律通道必须在0-6之间';
+                }
+                // 检查拍号
+                const timeSignature = elements.timeSignature?.value || '';
+                if (!timeSignature) {
+                    errors['time-signature'] = '请选择拍号';
+                }
+                // 检查音域中心
+                const pitchCenter = Number(elements.pitchCenter?.value || 66);
+                if (isNaN(pitchCenter) || pitchCenter < 60 || pitchCenter > 72) {
+                    errors['pitch-center'] = '音域中心必须在60-72之间';
+                }
+                // 检查三档跨度
+                const span = Number(elements.span?.value || 8);
+                if (isNaN(span) || span < 4 || span > 12) {
+                    errors['span'] = '三档跨度必须在4-12之间';
+                }
+                // 检查三档模式
+                const spanMode = elements.spanMode?.value || 'Mode1';
+                if (!spanMode) {
+                    errors['span-mode'] = '请选择三档模式';
+                }
+                // 如果是手动模式，检查三档Pitch值（不区分大小写）
+                if ((spanMode || '').toLowerCase() === 'mode2') {
+                    const pitch1 = Number(elements.pitch1?.value || 74);
+                    if (isNaN(pitch1) || pitch1 < 0 || pitch1 > 127) {
+                        errors['pitch-1'] = 'Pitch 1 必须在0-127之间';
+                    }
+                    const pitch2 = Number(elements.pitch2?.value || 66);
+                    if (isNaN(pitch2) || pitch2 < 0 || pitch2 > 127) {
+                        errors['pitch-2'] = 'Pitch 2 必须在0-127之间';
+                    }
+                    const pitch3 = Number(elements.pitch3?.value || 58);
+                    if (isNaN(pitch3) || pitch3 < 0 || pitch3 > 127) {
+                        errors['pitch-3'] = 'Pitch 3 必须在0-127之间';
+                    }
+                }
+                // 检查磁力
+                const magnet = Number(elements.magnet?.value || 4);
+                if (isNaN(magnet) || magnet < 0 || magnet > 12) {
+                    errors['magnet'] = '磁力必须在0-12之间';
+                }
+                // 检查整体响度偏移
+                const loudnessOffset = Number(elements.loudnessOffset?.value || 0);
+                if (isNaN(loudnessOffset) || loudnessOffset < -30 || loudnessOffset > 30) {
+                    errors['loudness-offset'] = '整体响度偏移必须在-30到30之间';
+                }
+                // 检查摆动程度
+                const swingAmount = Number(elements.swingAmount?.value || 0.12);
+                if (isNaN(swingAmount) || swingAmount < 0.00 || swingAmount > 0.60) {
+                    errors['swing-amount'] = '摆动程度必须在0.00-0.60之间';
+                }
+                // 检查音域下限
+                const pitchRangeMin = Number(elements.pitchRangeMin?.value || RANGE_LIMITS.pitchRangeMin.defaultValue);
+                if (isNaN(pitchRangeMin) || pitchRangeMin < RANGE_LIMITS.pitchRangeMin.min || pitchRangeMin > RANGE_LIMITS.pitchRangeMin.max) {
+                    errors['pitch-range-min'] = `音域下限必须在${RANGE_LIMITS.pitchRangeMin.min}-${RANGE_LIMITS.pitchRangeMin.max}之间`;
+                }
+                // 检查音域上限
+                const pitchRangeMax = Number(elements.pitchRangeMax?.value || RANGE_LIMITS.pitchRangeMax.defaultValue);
+                if (isNaN(pitchRangeMax) || pitchRangeMax < RANGE_LIMITS.pitchRangeMax.min || pitchRangeMax > RANGE_LIMITS.pitchRangeMax.max) {
+                    errors['pitch-range-max'] = `音域上限必须在${RANGE_LIMITS.pitchRangeMax.min}-${RANGE_LIMITS.pitchRangeMax.max}之间`;
+                }
+                // 检查音域逻辑一致性
+                if (pitchRangeMin >= pitchRangeMax) {
+                    errors['pitch-range-min'] = '音域下限不能大于或等于音域上限';
+                    errors['pitch-range-max'] = '音域下限不能大于或等于音域上限';
+                }
+                // 检查最大跳跃
+                const maxLeap = Number(elements.maxLeap?.value || 9);
+                if (isNaN(maxLeap) || maxLeap < 3 || maxLeap > 24) {
+                    errors['max-leap'] = '允许最大跳跃必须在3-24之间';
+                }
+                // 检查整体转调
+                const transpose = Number(elements.transpose?.value || 0);
+                if (isNaN(transpose) || transpose < -10 || transpose > 10) {
+                    errors['transpose'] = '整体转调必须在-10到10之间';
+                }
+                // 检查主旋律最小力度
+                const melodyMinVel = Number(elements.melodyMinVelocity?.value || 45);
+                if (isNaN(melodyMinVel) || melodyMinVel < 30 || melodyMinVel > 60) {
+                    errors['melody-min-velocity'] = '主旋律最小力度必须在30-60之间';
+                }
+                // 检查主旋律最大力度
+                const melodyMaxVel = Number(elements.melodyMaxVelocity?.value || 90);
+                if (isNaN(melodyMaxVel) || melodyMaxVel < 75 || melodyMaxVel > 105) {
+                    errors['melody-max-velocity'] = '主旋律最大力度必须在75-105之间';
+                }
+                // 检查力度逻辑一致性
+                if (melodyMinVel >= melodyMaxVel) {
+                    errors['melody-min-velocity'] = '主旋律最小力度不能大于或等于最大力度';
+                    errors['melody-max-velocity'] = '主旋律最小力度不能大于或等于最大力度';
+                }
+                // 检查音符时值倍率
+                const noteDurationMult = Number(elements.noteDurationMultiplier?.value || 1.2);
+                if (isNaN(noteDurationMult) || noteDurationMult < 0.25 || noteDurationMult > 2.5) {
+                    errors['note-duration-multiplier'] = '音符时值倍率必须在0.25-2.5之间';
+                }
+                // 检查稀疏化
+                const sparsity = Number(elements.sparsity?.value || 0);
+                if (isNaN(sparsity) || sparsity < 0 || sparsity > 4 || !Number.isInteger(sparsity)) {
+                    errors['sparsity'] = '稀疏化必须是0-4之间的整数';
+                }
+                // 检查和弦更换频率
+                const chordFreq = Number(elements.chordChangeFrequency?.value || 8);
+                if (isNaN(chordFreq) || chordFreq < 1 || chordFreq > 32) {
+                    errors['chord-change-frequency'] = '和弦更换频率必须在1-32之间';
+                }
+                // 检查和弦力度
+                const chordVel = Number(elements.chordVelocity?.value || 55);
+                if (isNaN(chordVel) || chordVel < 20 || chordVel > 90) {
+                    errors['chord-velocity'] = '和弦力度必须在20-90之间';
+                }
+                // 检查和弦八度偏移
+                const chordOctaveOffset = Number(elements.chordOctaveOffset?.value || 0);
+                if (isNaN(chordOctaveOffset) || chordOctaveOffset < -2 || chordOctaveOffset > 2) {
+                    errors['chord-octave-offset'] = '和弦八度偏移必须在-2到2之间';
+                }
+                return errors;
+            };
+            function validateField(fieldId){
+                let error = '';
+                switch(fieldId){
+                    case 'eeg-file':
+                        const eegFileName = elements.eegFile?.dataset?.fileName || '';
+                        if (!eegFileName) {
+                            error = '请先导入EEG数据文件（CSV格式）';
+                        } else if (!eegFileName.toLowerCase().endsWith('.csv')) {
+                            error = 'EEG文件必须是CSV格式';
+                        }
+                        break;
+                    case 'start-time':
+                        const startTime = Number(elements.startTime?.value || 0);
+                        if (isNaN(startTime) || startTime < 0 || startTime > 120) {
+                            error = '开始时间必须在0-120秒之间';
+                        }
+                        break;
+                    case 'duration':
+                        const duration = Number(elements.duration?.value || 30);
+                        if (isNaN(duration) || duration < 30 || duration > 120) {
+                            error = '时长必须在30-120秒之间';
+                        }
+                        break;
+                    case 'sampling-rate':
+                        const samplingRate = Number(elements.samplingRate?.value || 64);
+                        if (isNaN(samplingRate) || samplingRate < 16 || samplingRate > 128) {
+                            error = '目标采样率必须在16-128Hz之间';
+                        }
+                        break;
+                    case 'max-points':
+                        const maxPoints = Number(elements.maxPoints?.value || 8000);
+                        if (isNaN(maxPoints) || maxPoints < 1000 || maxPoints > 30000) {
+                            error = '最大点数必须在1000-30000之间';
+                        }
+                        break;
+                    case 'melody-channel':
+                        const melodyChannel = Number(elements.melodyChannel?.value || 0);
+                        if (isNaN(melodyChannel) || melodyChannel < 0 || melodyChannel > 6) {
+                            error = '主旋律通道必须在0-6之间';
+                        }
+                        break;
+                    case 'time-signature':
+                        if (!(elements.timeSignature?.value || '')) {
+                            error = '请选择拍号';
+                        }
+                        break;
+                    case 'pitch-center':
+                        const pitchCenter = Number(elements.pitchCenter?.value || 66);
+                        if (isNaN(pitchCenter) || pitchCenter < 60 || pitchCenter > 72) {
+                            error = '音域中心必须在60-72之间';
+                        }
+                        break;
+                    case 'span':
+                        const span = Number(elements.span?.value || 8);
+                        if (isNaN(span) || span < 4 || span > 12) {
+                            error = '三档跨度必须在4-12之间';
+                        }
+                        break;
+                    case 'magnet':
+                        const magnet = Number(elements.magnet?.value || 6);
+                        if (isNaN(magnet) || magnet < 0 || magnet > 12) {
+                            error = '磁力必须在0-12之间';
+                        }
+                        break;
+                    case 'span-mode':
+                        const spanMode = elements.spanMode?.value || 'Mode1';
+                        if (!spanMode) {
+                            error = '请选择三档模式';
+                        }
+                        break;
+                    case 'pitch-1':
+                        const pitch1 = Number(elements.pitch1?.value || 74);
+                        if (isNaN(pitch1) || pitch1 < 0 || pitch1 > 127) {
+                            error = 'Pitch 1 必须在0-127之间';
+                        }
+                        break;
+                    case 'pitch-2':
+                        const pitch2 = Number(elements.pitch2?.value || 66);
+                        if (isNaN(pitch2) || pitch2 < 0 || pitch2 > 127) {
+                            error = 'Pitch 2 必须在0-127之间';
+                        }
+                        break;
+                    case 'pitch-3':
+                        const pitch3 = Number(elements.pitch3?.value || 58);
+                        if (isNaN(pitch3) || pitch3 < 0 || pitch3 > 127) {
+                            error = 'Pitch 3 必须在0-127之间';
+                        }
+                        break;
+                    case 'vel-1':
+                        const vel1 = Number(elements.vel1?.value || 90);
+                        if (isNaN(vel1) || vel1 < 1 || vel1 > 127) {
+                            error = 'Vel 1 必须在1-127之间';
+                        }
+                        break;
+                    case 'vel-2':
+                        const vel2 = Number(elements.vel2?.value || 70);
+                        if (isNaN(vel2) || vel2 < 1 || vel2 > 127) {
+                            error = 'Vel 2 必须在1-127之间';
+                        }
+                        break;
+                    case 'vel-3':
+                        const vel3 = Number(elements.vel3?.value || 55);
+                        if (isNaN(vel3) || vel3 < 1 || vel3 > 127) {
+                            error = 'Vel 3 必须在1-127之间';
+                        }
+                        break;
+                    case 'loudness-offset':
+                        const loudnessOffset = Number(elements.loudnessOffset?.value || 0);
+                        if (isNaN(loudnessOffset) || loudnessOffset < -30 || loudnessOffset > 30) {
+                            error = '整体响度偏移必须在-30到30之间';
+                        }
+                        break;
+                    case 'swing-amount':
+                        const swingAmount = Number(elements.swingAmount?.value || 0.36);
+                        if (isNaN(swingAmount) || swingAmount < 0.06 || swingAmount > 0.72) {
+                            error = '摆动程度必须在0.06-0.72之间';
+                        }
+                        break;
+                    case 'rhythm-quantization':
+                        const rq = (elements.rhythmQuantization?.value || '').toLowerCase();
+                        if (!rq) {
+                            error = '请选择节奏量化选项';
+                        } else if (!['off','1/8','1/16','1/32'].includes(rq)) {
+                            error = '节奏量化选项无效';
+                        }
+                        break;
+                    case 'scale-constraint':
+                        const sc = (normalizeScaleConstraint(elements.scaleConstraint?.value) || '').toLowerCase();
+                        if (!sc) {
+                            error = '请选择音阶约束';
+                        } else if (!['diatonic','chromatic','penta'].includes(sc)) {
+                            error = '音阶约束选项无效';
+                        }
+                        break;
+                    case 'pitch-coherence':
+                        const pc = (elements.pitchCoherence?.value || '').toLowerCase();
+                        if (!pc) {
+                            error = '请选择修音连贯程度';
+                        } else if (!['none','fx1','fx2','fx3','fx4'].includes(pc)) {
+                            error = '修音连贯程度无效';
+                        }
+                        break;
+                        case 'dynamics-preset':
+                            const dp = (elements.dynamicsPreset?.value || '').toLowerCase();
+                            if (!dp) {
+                                error = '请选择力度预设';
+                            } else if (!['light','standard','strong','custom'].includes(dp)) {
+                                error = '力度预设无效';
+                            }
+                            break;
+                        case 'emotion':
+                            const em = (elements.emotion?.value || '').toLowerCase();
+                            if (!em) {
+                                error = '请选择情绪';
+                            } else if (!['calm','excited','sad','tense'].includes(em)) {
+                                error = '情绪选项无效';
+                            }
+                            break;
+                    case 'pitch-range-min':
+                    case 'pitch-range-max':
+                        const pitchRangeMin = Number(elements.pitchRangeMin?.value || RANGE_LIMITS.pitchRangeMin.defaultValue);
+                        const pitchRangeMax = Number(elements.pitchRangeMax?.value || RANGE_LIMITS.pitchRangeMax.defaultValue);
+                        if (fieldId === 'pitch-range-min') {
+                            if (isNaN(pitchRangeMin) || pitchRangeMin < RANGE_LIMITS.pitchRangeMin.min || pitchRangeMin > RANGE_LIMITS.pitchRangeMin.max) {
+                                error = `音域下限必须在${RANGE_LIMITS.pitchRangeMin.min}-${RANGE_LIMITS.pitchRangeMin.max}之间`;
+                            } else if (pitchRangeMin >= pitchRangeMax) {
+                                error = '音域下限不能大于或等于音域上限';
+                            }
+                        } else {
+                            if (isNaN(pitchRangeMax) || pitchRangeMax < RANGE_LIMITS.pitchRangeMax.min || pitchRangeMax > RANGE_LIMITS.pitchRangeMax.max) {
+                                error = `音域上限必须在${RANGE_LIMITS.pitchRangeMax.min}-${RANGE_LIMITS.pitchRangeMax.max}之间`;
+                            } else if (pitchRangeMin >= pitchRangeMax) {
+                                error = '音域下限不能大于或等于音域上限';
+                            }
+                        }
+                        break;
+                    case 'max-leap':
+                        const maxLeap = Number(elements.maxLeap?.value || 9);
+                        if (isNaN(maxLeap) || maxLeap < 3 || maxLeap > 24) {
+                            error = '允许最大跳跃必须在3-24之间';
+                        }
+                        break;
+                    case 'transpose':
+                        const transpose = Number(elements.transpose?.value || 0);
+                        if (isNaN(transpose) || transpose < -10 || transpose > 10) {
+                            error = '整体转调必须在-10到10之间';
+                        }
+                        break;
+                    case 'melody-min-velocity':
+                    case 'melody-max-velocity':
+                        const melodyMinVel = Number(elements.melodyMinVelocity?.value || 45);
+                        const melodyMaxVel = Number(elements.melodyMaxVelocity?.value || 90);                    
+                        if (fieldId === 'melody-min-velocity') {
+                            if (isNaN(melodyMinVel) || melodyMinVel < 30 || melodyMinVel > 60) {
+                                error = '主旋律最小力度必须在30-60之间';
+                            } else if (melodyMinVel >= melodyMaxVel) {
+                                error = '主旋律最小力度不能大于或等于最大力度';
+                            }
+                        } else {
+                            if (isNaN(melodyMaxVel) || melodyMaxVel < 75 || melodyMaxVel > 105) {
+                                error = '主旋律最大力度必须在75-105之间';
+                            } else if (melodyMinVel >= melodyMaxVel) {
+                                error = '主旋律最小力度不能大于或等于最大力度';
+                            }
+                        }
+                        break;
+                    case 'note-duration-multiplier':
+                        const noteDurationMult = Number(elements.noteDurationMultiplier?.value || 1.2);
+                        if (isNaN(noteDurationMult) || noteDurationMult < 0.25 || noteDurationMult > 2.5) {
+                            error = '音符时值倍率必须在0.25-2.5之间';
+                        }
+                        break;
+                    case 'sparsity':
+                        const sparsity = Number(elements.sparsity?.value || 0);
+                        if (isNaN(sparsity) || sparsity < 0 || sparsity > 4 || !Number.isInteger(sparsity)) {
+                            error = '稀疏化必须是0-4之间的整数';
+                        }
+                        break;
+                    case 'chord-change-frequency':
+                        const chordFreq = Number(elements.chordChangeFrequency?.value || 8);
+                        if (isNaN(chordFreq) || chordFreq < 1 || chordFreq > 32) {
+                            error = '和弦更换频率必须在1-32之间';
+                        }
+                        break;
+                    case 'chord-velocity':
+                        const chordVel = Number(elements.chordVelocity?.value || 55);
+                        if (isNaN(chordVel) || chordVel < 20 || chordVel > 90) {
+                            error = '和弦力度必须在20-90之间';
+                        }
+                        break;
+                    case 'chord-style':
+                        const chordStyle = elements.chordStyle?.value || '';
+                        if (!chordStyle) {
+                            error = '请选择和弦风格';
+                        } else if (!['Block', 'Arp'].includes(chordStyle)) {
+                            error = '和弦风格选项无效';
+                        }
+                        break;
+                    case 'chord-octave-offset':
+                        const chordOctaveOffset = Number(elements.chordOctaveOffset?.value || 0);
+                        if (isNaN(chordOctaveOffset) || chordOctaveOffset < -2 || chordOctaveOffset > 2) {
+                            error = '和弦八度偏移必须在-2到2之间';
+                        }
+                        break;
+                    case 'key-root':
+                        const keyRoot = elements.keyRoot?.value || '';
+                        if (!keyRoot) {
+                            error = '请选择调性根音';
+                        } else if (!['Auto','C','C#','D','D#','E','F','F#','G','G#','A','A#','B'].includes(keyRoot)) {
+                            error = '调性根音选项无效';
+                        }
+                        break;
+                        case 'dynamics-limit-strategy':
+                            const dyn = (elements.dynamicsLimitStrategy?.value || '').toLowerCase();
+                            if (!dyn) {
+                                error = '请选择力度上限策略';
+                            } else if (!['conservative','balanced','aggressive'].includes(dyn)) {
+                                error = '力度上限策略无效';
+                            }
+                            break;
+                }
+                return error;
+            };
+            function updateFieldError(fieldId, error){
+                const errorElement = document.getElementById(`${fieldId}-error`);
+                if (errorElement) {
+                    if (error) {
+                        errorElement.textContent = error;
+                        errorElement.style.display = 'block';
+                    } else {
+                        errorElement.textContent = '';
+                        errorElement.style.display = 'none';
+                    }
+                }
+            };
+            function clearFieldErrors(){
+                // 清除所有字段的错误信息
+                const errorElements = document.querySelectorAll('.field-error');
+                errorElements.forEach(el => {
+                    el.textContent = '';
+                    el.style.display = 'none';
+                });
+            };
+            function showFieldErrors(errors){
+                clearFieldErrors();
+                // 显示错误信息
+                for (const [fieldId, message] of Object.entries(errors)) {
+                    const errorElement = document.getElementById(`${fieldId}-error`);
+                    if (errorElement) {
+                        errorElement.textContent = message;
+                        errorElement.style.display = 'block';
+                    }
+                }
+            };
+            function savePrefs(){
+                clearFieldErrors();
+                if(!hasValidEegFile()){
+                    const error = validateField('eeg-file');
+                    updateFieldError('eeg-file', error);
+                    setFeedback('请先上传 EEG 文件。', true);
+                    return;
+                }
+                try {
+                    const prefs = gatherPrefs();
+                    localStorage.setItem(storageKey, JSON.stringify(prefs));
+                    updateSummary(prefs);
+                    setFeedback('偏好已保存。', false);
+                    alert('偏好已保存');
+                } catch (e) {
+                    console.warn('保存偏好失败', e);
+                    setFeedback('保存偏好失败，请检查浏览器设置。', true);
+                    alert('保存偏好失败，请检查浏览器设置。');
+                }
+            };
+            function clearPrefs(){
+                if(confirm('确定要清除所有已保存的偏好设置吗？此操作无法撤销。')){
+                    try {
+                        localStorage.removeItem(storageKey);
+                        localStorage.removeItem('selectedGenre');
+                        // 重置所有字段到默认值
+                        resetToDefaults();
+                        updateSummary({});
+                        // 清除错误信息
+                        clearFieldErrors();
+                        setFeedback('已清除所有已保存数据。', false);
+                        alert('已清除所有已保存数据');
+                    } catch (e) {
+                        console.warn('清除偏好失败', e);
+                        setFeedback('清除偏好失败，请检查浏览器设置。', true);
+                        alert('清除偏好失败，请检查浏览器设置。');
+                    }
+                }
+            };
+            function resetToDefaults(){
+                // 重置EEG文件
+                if(elements.eegFile){
+                    elements.eegFile.value = '';
+                    elements.eegFile.dataset.fileName = '';
+                    updateDropZoneLabel('');
+                }
+                // 重置其他字段到默认值
+                if(elements.startTime){
+                    elements.startTime.value = 0;
+                }
+                if(elements.duration){
+                    elements.duration.value = 30;
+                }
+                if(elements.samplingRate){
+                    elements.samplingRate.value = 64;
+                    elements.samplingRateValue.textContent = '64';
+                }
+                if(elements.maxPoints){
+                    elements.maxPoints.value = 8000;
+                }
+                if(elements.melodyChannel){
+                    elements.melodyChannel.value = 0;
+                    elements.melodyChannelValue.textContent = '0';
+                }
+                if(elements.rule){
+                    elements.rule.value = 'Rule1';
+                }
+                if(elements.timeSignature){
+                    elements.timeSignature.value = '4/4';
+                }
+                if(elements.pitchCenter){
+                    elements.pitchCenter.value = 66;
+                    elements.pitchCenterValue.textContent = '66';
+                }
+                if(elements.span){
+                    elements.span.value = 8;
+                    elements.spanValue.textContent = '8';
+                }
+                if(elements.spanMode){
+                    elements.spanMode.value = 'Mode1';
+                    toggleSpanModeFields('Mode1');
+                }
+                if(elements.pitch1){
+                    elements.pitch1.value = 74;
+                }
+                if(elements.pitch2){
+                    elements.pitch2.value = 66;
+                }
+                if(elements.pitch3){
+                    elements.pitch3.value = 58;
+                }
+                if(elements.magnet){
+                    elements.magnet.value = 4;
+                    elements.magnetValue.textContent = '4';
+                }
+                if(elements.dynamicsPreset){
+                    elements.dynamicsPreset.value = 'Standard';
+                    toggleDynamicsFields('Standard');
+                }
+                if(elements.vel1){
+                    elements.vel1.value = 90;
+                }
+                if(elements.vel2){
+                    elements.vel2.value = 70;
+                }
+                if(elements.vel3){
+                    elements.vel3.value = 55;
+                }
+                if(elements.loudnessOffset){
+                    elements.loudnessOffset.value = 0;
+                    elements.loudnessOffsetValue.textContent = '0';
+                }
+                if(elements.dynamicsLimitStrategy){
+                    elements.dynamicsLimitStrategy.value = 'Balanced';
+                }
+                if(elements.pitchCoherence){
+                    elements.pitchCoherence.value = 'None';
+                }
+                if(elements.scaleConstraint){
+                    elements.scaleConstraint.value = 'Diatonic';
+                }
+                if(elements.rhythmQuantization){
+                    elements.rhythmQuantization.value = 'Off';
+                }
+                if(elements.swingAmount){
+                    elements.swingAmount.value = 0.12;
+                    elements.swingAmountValue.textContent = '0.12';
+                }
+                if(elements.pitchRangeMin){
+                    elements.pitchRangeMin.value = RANGE_LIMITS.pitchRangeMin.defaultValue;
+                    elements.pitchRangeMinValue.textContent = String(RANGE_LIMITS.pitchRangeMin.defaultValue);
+                }
+                if(elements.pitchRangeMax){
+                    elements.pitchRangeMax.value = RANGE_LIMITS.pitchRangeMax.defaultValue;
+                    elements.pitchRangeMaxValue.textContent = String(RANGE_LIMITS.pitchRangeMax.defaultValue);
+                }
+                if(elements.maxLeap){
+                    elements.maxLeap.value = 9;
+                    elements.maxLeapValue.textContent = '9';
+                }
+                if(elements.transpose){
+                    elements.transpose.value = 0;
+                    elements.transposeValue.textContent = '0';
+                }
+                if(elements.melodyMinVelocity){
+                    elements.melodyMinVelocity.value = 45;
+                    elements.melodyMinVelocityValue.textContent = '45';
+                }
+                if(elements.melodyMaxVelocity){
+                    elements.melodyMaxVelocity.value = 90;
+                    elements.melodyMaxVelocityValue.textContent = '90';
+                }
+                if(elements.noteDurationMultiplier){
+                    elements.noteDurationMultiplier.value = 1.2;
+                    elements.noteDurationMultiplierValue.textContent = '1.2';
+                }
+                if(elements.sparsity){
+                    elements.sparsity.value = '0';
+                }
+                if(elements.chordTrackEnabled){
+                    elements.chordTrackEnabled.checked = false;
+                }
+                if(elements.emotion){
+                    elements.emotion.value = 'Calm';
+                }
+                if(elements.chordChangeFrequency){
+                    elements.chordChangeFrequency.value = 8;
+                    elements.chordChangeFrequencyValue.textContent = '8';
+                }
+                if(elements.chordStyle){
+                    elements.chordStyle.value = 'Block';
+                }
+                if(elements.chordVelocity){
+                    elements.chordVelocity.value = 55;
+                    elements.chordVelocityValue.textContent = '55';
+                }
+                if(elements.chordOctaveOffset){
+                    elements.chordOctaveOffset.value = 0;
+                    elements.chordOctaveOffsetValue.textContent = '0';
+                }
+                if(elements.keyRoot){
+                    elements.keyRoot.value = 'Auto';
+                }
+                if(elements.majorMinor){
+                    elements.majorMinor.value = 'Auto';
+                }
+                updateActionButtons();
+            };
+            function updateSummary(saved){
+                const parts = [];
+                if(saved.eegFileName) parts.push(`EEG文件：${saved.eegFileName}`);
+                if(saved.startTime != null) parts.push(`开始时间：${saved.startTime}s`);
+                if(saved.duration != null) parts.push(`时长：${saved.duration}s`);
+                if(saved.samplingRate != null) parts.push(`采样率：${saved.samplingRate}Hz`);
+                if(saved.maxPoints != null) parts.push(`最大点数：${formatNumber(saved.maxPoints)}`);
+                if(saved.melodyChannel != null) parts.push(`主旋律通道：${saved.melodyChannel}`);
+                if(saved.rule) parts.push(`规则：${saved.rule}`);
+                if(saved.timeSignature) parts.push(`拍号：${saved.timeSignature}`);
+                if(saved.pitchCenter != null) parts.push(`音域中心：${saved.pitchCenter}`);
+                if(saved.span != null) parts.push(`三档跨度：${saved.span}`);
+                if(saved.magnet != null) parts.push(`磁力：${Math.round(Number(saved.magnet))}`);
+                if(saved.dynamicsPreset){
+                    const dynMap = { light: '较轻', standard: '标准', strong: '强烈', custom: '手动', heavy: '较重' };
+                    const key = (saved.dynamicsPreset || '').toString().toLowerCase();
+                    parts.push(`力度预设：${dynMap[key] || saved.dynamicsPreset}`);
+                }
+                if(saved.loudnessOffset != null) parts.push(`响度偏移：${saved.loudnessOffset}`);
+                if(saved.dynamicsLimitStrategy){
+                    const stratMap = { conservative: '保守', balanced: '平衡', aggressive: '激进' };
+                    const sk = (saved.dynamicsLimitStrategy || '').toString().toLowerCase();
+                    parts.push(`力度策略：${stratMap[sk] || saved.dynamicsLimitStrategy}`);
+                }
+                if(saved.pitchCoherence){
+                    const pcMap = { none: '无', fx1: 'FX1', fx2: 'FX2', fx3: 'FX3', fx4: 'FX4' };
+                    const pk = (saved.pitchCoherence || '').toString().toLowerCase();
+                    parts.push(`修音连贯：${pcMap[pk] || saved.pitchCoherence}`);
+                }
+                if(saved.scaleConstraint){
+                    const scaleMap = { diatonic: 'Diatonic', chromatic: 'Chromatic', penta: 'Penta', option2: 'Chromatic', option3: 'Penta' };
+                    const ck = (saved.scaleConstraint || '').toString().toLowerCase();
+                    parts.push(`音阶约束：${scaleMap[ck] || saved.scaleConstraint}`);
+                }
+                if(saved.rhythmQuantization) parts.push(`节奏量化：${saved.rhythmQuantization}`);
+                if(saved.swingAmount != null) parts.push(`摆动程度：${saved.swingAmount}`);
+                if(saved.pitchRangeMin != null) parts.push(`音域下限：${saved.pitchRangeMin}`);
+                if(saved.pitchRangeMax != null) parts.push(`音域上限：${saved.pitchRangeMax}`);
+                if(saved.maxLeap != null) parts.push(`最大跳跃：${saved.maxLeap}`);
+                if(saved.transpose != null) parts.push(`整体转调：${saved.transpose}`);
+                if(saved.melodyMinVelocity != null) parts.push(`最小力度：${saved.melodyMinVelocity}`);
+                if(saved.melodyMaxVelocity != null) parts.push(`最大力度：${saved.melodyMaxVelocity}`);
+                if(saved.noteDurationMultiplier != null) parts.push(`音符倍率：${saved.noteDurationMultiplier}`);
+                if(saved.sparsity != null) parts.push(`稀疏化：${saved.sparsity}`);
+                if(saved.chordTrackEnabled != null) parts.push(`和弦轨：${saved.chordTrackEnabled ? '启用' : '禁用'}`);
+                if(saved.emotion){
+                    const emoMap = { calm: '平静', excited: '兴奋', sad: '伤感', tense: '紧张' };
+                    const ek = (saved.emotion || '').toString().toLowerCase();
+                    parts.push(`情绪：${emoMap[ek] || saved.emotion}`);
+                }
+                if(saved.chordChangeFrequency != null) parts.push(`和弦频率：${saved.chordChangeFrequency}`);
+                if(saved.chordStyle) parts.push(`和弦风格：${saved.chordStyle}`);
+                if(saved.chordVelocity != null) parts.push(`和弦力度：${saved.chordVelocity}`);
+                if(saved.chordOctaveOffset != null) parts.push(`和弦八度：${saved.chordOctaveOffset}`);
+                if(saved.keyRoot) parts.push(`调性根音：${saved.keyRoot}`);
+                if(saved.majorMinor) parts.push(`大小调：${saved.majorMinor}`);
+                if(parts.length){
+                    summary.textContent = parts.join(' · ');
+                } else {
+                    summary.textContent = '尚未保存任何偏好。';
+                }
+            };
+            window.savePrefs = savePrefs;
+            window.clearPrefs = clearPrefs;
+            function toggleSpanModeFields(mode){
+                const manualFields = document.querySelectorAll('.span-mode-manual-field');
+                const isManual = (mode || '').toString().toLowerCase() === 'mode2';
+                if(isManual){
+                    manualFields.forEach(field => {
+                        field.classList.remove('is-disabled');
+                        field.setAttribute('aria-disabled', 'false');
+                        const input = field.querySelector('input');
+                        if(input) input.disabled = false;
+                    });
+                } else {
+                    manualFields.forEach(field => {
+                        field.classList.add('is-disabled');
+                        field.setAttribute('aria-disabled', 'true');
+                        const input = field.querySelector('input');
+                        if(input) input.disabled = true;
+                        const errorElements = field.querySelectorAll('.field-error');
+                        errorElements.forEach(el => {
+                            el.textContent = '';
+                            el.style.display = 'none';
+                        });
+                    });
+                }
+            };
+            function toggleDynamicsFields(preset){
+                const manualFields = document.querySelectorAll('.dynamics-manual-field');
+                const isCustom = (preset || '').toString().toLowerCase() === 'custom';
+                if(isCustom){
+                    manualFields.forEach(field => {
+                        field.classList.remove('is-disabled');
+                        field.setAttribute('aria-disabled', 'false');
+                        const input = field.querySelector('input');
+                        if(input) input.disabled = false;
+                    });
+                } else {
+                    manualFields.forEach(field => {
+                        field.classList.add('is-disabled');
+                        field.setAttribute('aria-disabled', 'true');
+                        const input = field.querySelector('input');
+                        if(input) input.disabled = true;
+                        const errorElements = field.querySelectorAll('.field-error');
+                        errorElements.forEach(el => {
+                            el.textContent = '';
+                            el.style.display = 'none';
+                        });
+                    });
+                }
+            }
+            window.handleSpanModeChange = function(value){
+                toggleSpanModeFields(value);
+            };
+            window.handleDynamicsPresetChange = function(){
+                const val = elements.dynamicsPreset?.value || 'Standard';
+                toggleDynamicsFields(val);
+            };
+            function attachListeners(){
+                if(elements.startTime){
+                    elements.startTime.addEventListener('input', () => {
+                        const error = validateField('start-time');
+                        updateFieldError('start-time', error);
+                    });
+                }
+                if(elements.duration){
+                    elements.duration.addEventListener('input', () => {
+                        const error = validateField('duration');
+                        updateFieldError('duration', error);
+                    });
+                }
+                if(elements.samplingRate){
+                    elements.samplingRate.addEventListener('input', () => {
+                        elements.samplingRateValue.textContent = elements.samplingRate.value;
+                        const error = validateField('sampling-rate');
+                        updateFieldError('sampling-rate', error);
+                    });
+                }
+                if(elements.maxPoints){
+                    elements.maxPoints.addEventListener('input', () => {
+                        const error = validateField('max-points');
+                        updateFieldError('max-points', error);
+                    });
+                }
+                if(elements.melodyChannel){
+                    elements.melodyChannel.addEventListener('input', () => {
+                        elements.melodyChannelValue.textContent = elements.melodyChannel.value;
+                        const error = validateField('melody-channel');
+                        updateFieldError('melody-channel', error);
+                    });
+                }
+                if(elements.timeSignature){
+                    elements.timeSignature.addEventListener('change', () => {
+                        const error = validateField('time-signature');
+                        updateFieldError('time-signature', error);
+                    });
+                }
+                if(elements.pitchCenter){
+                    elements.pitchCenter.addEventListener('input', () => {
+                        elements.pitchCenterValue.textContent = elements.pitchCenter.value;
+                        const error = validateField('pitch-center');
+                        updateFieldError('pitch-center', error);
+                    });
+                }
+                if(elements.span){
+                    elements.span.addEventListener('input', () => {
+                        elements.spanValue.textContent = elements.span.value;
+                        const error = validateField('span');
+                        updateFieldError('span', error);
+                    });
+                }
+                if(elements.magnet){
+                    elements.magnet.addEventListener('input', () => {
+                        elements.magnetValue.textContent = elements.magnet.value;
+                        const error = validateField('magnet');
+                        updateFieldError('magnet', error);
+                    });
+                }
+                if(elements.spanMode){
+                    elements.spanMode.addEventListener('change', () => {
+                        toggleSpanModeFields(elements.spanMode.value);
+                        const error = validateField('span-mode');
+                        updateFieldError('span-mode', error);
+                    });
+                }
+                if(elements.pitch1){
+                    elements.pitch1.addEventListener('input', () => {
+                        const error = validateField('pitch-1');
+                        updateFieldError('pitch-1', error);
+                    });
+                }
+                if(elements.pitch2){
+                    elements.pitch2.addEventListener('input', () => {
+                        const error = validateField('pitch-2');
+                        updateFieldError('pitch-2', error);
+                    });
+                }
+                if(elements.pitch3){
+                    elements.pitch3.addEventListener('input', () => {
+                        const error = validateField('pitch-3');
+                        updateFieldError('pitch-3', error);
+                    });
+                }
+                if(elements.loudnessOffset){
+                    elements.loudnessOffset.addEventListener('input', () => {
+                        elements.loudnessOffsetValue.textContent = elements.loudnessOffset.value;
+                        const error = validateField('loudness-offset');
+                        updateFieldError('loudness-offset', error);
+                    });
+                }
+                if(elements.swingAmount){
+                    elements.swingAmount.addEventListener('input', () => {
+                        elements.swingAmountValue.textContent = elements.swingAmount.value;
+                        const error = validateField('swing-amount');
+                        updateFieldError('swing-amount', error);
+                    });
+                }
+                if(elements.pitchRangeMin){
+                    elements.pitchRangeMin.addEventListener('input', () => {
+                        elements.pitchRangeMinValue.textContent = elements.pitchRangeMin.value;
+                        const error = validateField('pitch-range-min');
+                        updateFieldError('pitch-range-min', error);
+                        // 同时验证上限，因为它们是相关的
+                        const maxError = validateField('pitch-range-max');
+                        updateFieldError('pitch-range-max', maxError);
+                    });
+                }
+                if(elements.pitchRangeMax){
+                    elements.pitchRangeMax.addEventListener('input', () => {
+                        elements.pitchRangeMaxValue.textContent = elements.pitchRangeMax.value;
+                        const error = validateField('pitch-range-max');
+                        updateFieldError('pitch-range-max', error);
+                        // 同时验证下限，因为它们是相关的
+                        const minError = validateField('pitch-range-min');
+                        updateFieldError('pitch-range-min', minError);
+                    });
+                }
+                if(elements.maxLeap){
+                    elements.maxLeap.addEventListener('input', () => {
+                        elements.maxLeapValue.textContent = elements.maxLeap.value;
+                        const error = validateField('max-leap');
+                        updateFieldError('max-leap', error);
+                    });
+                }
+                if(elements.transpose){
+                    elements.transpose.addEventListener('input', () => {
+                        elements.transposeValue.textContent = elements.transpose.value;
+                        const error = validateField('transpose');
+                        updateFieldError('transpose', error);
+                    });
+                }
+                if(elements.melodyMinVelocity){
+                    elements.melodyMinVelocity.addEventListener('input', () => {
+                        elements.melodyMinVelocityValue.textContent = elements.melodyMinVelocity.value;
+                        const error = validateField('melody-min-velocity');
+                        updateFieldError('melody-min-velocity', error);
+                        // 同时验证最大力度，因为它们是相关的
+                        const maxError = validateField('melody-max-velocity');
+                        updateFieldError('melody-max-velocity', maxError);
+                    });
+                }
+                if(elements.melodyMaxVelocity){
+                    elements.melodyMaxVelocity.addEventListener('input', () => {
+                        elements.melodyMaxVelocityValue.textContent = elements.melodyMaxVelocity.value;
+                        const error = validateField('melody-max-velocity');
+                        updateFieldError('melody-max-velocity', error);
+                        // 同时验证最小力度，因为它们是相关的
+                        const minError = validateField('melody-min-velocity');
+                        updateFieldError('melody-min-velocity', minError);
+                    });
+                }
+                if(elements.noteDurationMultiplier){
+                    elements.noteDurationMultiplier.addEventListener('input', () => {
+                        elements.noteDurationMultiplierValue.textContent = elements.noteDurationMultiplier.value;
+                        const error = validateField('note-duration-multiplier');
+                        updateFieldError('note-duration-multiplier', error);
+                    });
+                }
+                if(elements.chordChangeFrequency){
+                    elements.chordChangeFrequency.addEventListener('input', () => {
+                        elements.chordChangeFrequencyValue.textContent = elements.chordChangeFrequency.value;
+                        const error = validateField('chord-change-frequency');
+                        updateFieldError('chord-change-frequency', error);
+                    });
+                }
+                if(elements.chordVelocity){
+                    elements.chordVelocity.addEventListener('input', () => {
+                        elements.chordVelocityValue.textContent = elements.chordVelocity.value;
+                        const error = validateField('chord-velocity');
+                        updateFieldError('chord-velocity', error);
+                    });
+                }
+                if(elements.chordOctaveOffset){
+                    elements.chordOctaveOffset.addEventListener('input', () => {
+                        elements.chordOctaveOffsetValue.textContent = elements.chordOctaveOffset.value;
+                        const error = validateField('chord-octave-offset');
+                        updateFieldError('chord-octave-offset', error);
+                    });
+                }
+
+                if(elements.rule){
+                    elements.rule.addEventListener('change', () => {
+                        const error = validateField('rule');
+                        updateFieldError('rule', error);
+                    });
+                }
+
+                if(elements.pitchCoherence){
+                    elements.pitchCoherence.addEventListener('change', () => {
+                        const error = validateField('pitch-coherence');
+                        updateFieldError('pitch-coherence', error);
+                    });
+                }
+
+                if(elements.scaleConstraint){
+                    elements.scaleConstraint.addEventListener('change', () => {
+                        const error = validateField('scale-constraint');
+                        updateFieldError('scale-constraint', error);
+                    });
+                }
+
+                if(elements.rhythmQuantization){
+                    elements.rhythmQuantization.addEventListener('change', () => {
+                        const error = validateField('rhythm-quantization');
+                        updateFieldError('rhythm-quantization', error);
+                    });
+                }
+
+                if(elements.sparsity){
+                    elements.sparsity.addEventListener('change', () => {
+                        const error = validateField('sparsity');
+                        updateFieldError('sparsity', error);
+                    });
+                }
+
+                if(elements.emotion){
+                    elements.emotion.addEventListener('change', () => {
+                        const error = validateField('emotion');
+                        updateFieldError('emotion', error);
+                    });
+                }
+
+                if(elements.chordStyle){
+                    elements.chordStyle.addEventListener('change', () => {
+                        const error = validateField('chord-style');
+                        updateFieldError('chord-style', error);
+                    });
+                }
+
+                if(elements.keyRoot){
+                    elements.keyRoot.addEventListener('change', () => {
+                        const error = validateField('key-root');
+                        updateFieldError('key-root', error);
+                    });
+                }
+
+                if(elements.majorMinor){
+                    elements.majorMinor.addEventListener('change', () => {
+                        const error = validateField('major-minor');
+                        updateFieldError('major-minor', error);
+                    });
+                }
+                // 单选按钮验证
+                if(elements.dynamicsPreset){
+                    elements.dynamicsPreset.addEventListener('change', () => {
+                        const checkedValue = elements.dynamicsPreset?.value;
+                        toggleDynamicsFields(checkedValue);
+                        const error = validateField('dynamics-preset');
+                        updateFieldError('dynamics-preset', error);
+                    });
+                }
+                if(elements.vel1){
+                    elements.vel1.addEventListener('input', () => {
+                        const error = validateField('vel-1');
+                        updateFieldError('vel-1', error);
+                    });
+                }
+                if(elements.vel2){
+                    elements.vel2.addEventListener('input', () => {
+                        const error = validateField('vel-2');
+                        updateFieldError('vel-2', error);
+                    });
+                }
+                if(elements.vel3){
+                    elements.vel3.addEventListener('input', () => {
+                        const error = validateField('vel-3');
+                        updateFieldError('vel-3', error);
+                    });
+                }
+                if(elements.dynamicsLimitStrategy){
+                    elements.dynamicsLimitStrategy.addEventListener('change', () => {
+                        const error = validateField('dynamics-limit-strategy');
+                        updateFieldError('dynamics-limit-strategy', error);
+                    });
+                }
+                if(elements.chordTrackEnabled){
+                    elements.chordTrackEnabled.addEventListener('change', () => {
+                        const error = validateField('chord-track-enabled');
+                        updateFieldError('chord-track-enabled', error);
+                    });
+                }
+                if(elements.eegFile){
+                    elements.eegFile.addEventListener('change', (event) => {
+                        const file = event.target.files?.[0];
+                        if(file){
+                            elements.eegFile.dataset.fileName = file.name;
+                            updateDropZoneLabel(file.name);
+                        } else {
+                            elements.eegFile.dataset.fileName = '';
+                            updateDropZoneLabel('');
+                        }
+                        const error = validateField('eeg-file');
+                        updateFieldError('eeg-file', error);
+                        updateActionButtons();
+                    });
+                }
+                if(elements.dropZone){
+                    elements.dropZone.addEventListener('dragover', (event) => {
+                        event.preventDefault();
+                        elements.dropZone.classList.add('dragover');
+                    });
+                    elements.dropZone.addEventListener('dragleave', () => {
+                        elements.dropZone.classList.remove('dragover');
+                    });
+                    elements.dropZone.addEventListener('drop', (event) => {
+                        event.preventDefault();
+                        elements.dropZone.classList.remove('dragover');
+                        const file = event.dataTransfer?.files?.[0];
+                        if(file && file.name.toLowerCase().endsWith('.csv')){
+                            if(elements.eegFile){
+                                const dataTransfer = new DataTransfer();
+                                dataTransfer.items.add(file);
+                                elements.eegFile.files = dataTransfer.files;
+                                elements.eegFile.dataset.fileName = file.name;
+                                updateDropZoneLabel(file.name);
+                            }
+                        }
+                        const error = validateField('eeg-file');
+                        updateFieldError('eeg-file', error);
+                        updateActionButtons();
+                    });
+                }
+                if(elements.saveButton){
+                    elements.saveButton.addEventListener('click', () => {
+                        if (typeof window.emmaqSavePreferences === 'function') {
+                            window.emmaqSavePreferences(savePrefs);
+                            return;
+                        }
+                        savePrefs();
+                    });
+                }
+                if(elements.clearButton){
+                    elements.clearButton.addEventListener('click', clearPrefs);
+                }
+                if(elements.generateButton){
+                    elements.generateButton.addEventListener('click', () => {
+                        if (typeof window.emmaqGenerateMusic === 'function') {
+                            window.emmaqGenerateMusic();
+                            return;
+                        }
+                        exportPrefsAsIni();
+                    });
+                }
+            };
+            window.EMMAQPreferencesBridge = {
+                elements,
+                feedback,
+                summary,
+                storageKey,
+                gatherPrefs,
+                buildIniContent,
+                validatePrefs,
+                validateField,
+                updateFieldError,
+                clearFieldErrors,
+                setFeedback,
+                updateSummary,
+                hasValidEegFile,
+            };
+            document.addEventListener('DOMContentLoaded', () => {
+                applyRangeLimits();
+                attachListeners();
+                load();
+                updateActionButtons();
+            });
+        })();
+    </script>
 </body>
 </html>
-
