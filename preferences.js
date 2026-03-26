@@ -152,6 +152,9 @@
         });
     }
 
+    const POLL_INTERVAL_MS = 2500;
+    const POLL_TIMEOUT_MS = 15 * 60 * 1000;
+
     document.addEventListener('DOMContentLoaded', () => {
         const bridge = window.EMMAQPreferencesBridge;
         if (!bridge || !window.EmmaQApiClient) {
@@ -177,6 +180,7 @@
             lastMidiArtifact: null,
             midiPlayerObjectUrl: '',
             isBusy: false,
+            pollToken: 0,
         };
 
         function setFeedback(message, isError = false) {
@@ -292,7 +296,7 @@
                 elements.downloadButton.disabled = state.isBusy || !state.lastMidiArtifact;
             }
             if (elements.evaluateButton) {
-                elements.evaluateButton.disabled = state.isBusy || !state.lastJobId;
+                elements.evaluateButton.disabled = state.isBusy || !state.lastJobId || !state.lastMidiArtifact;
             }
         }
 
@@ -317,6 +321,7 @@
         }
 
         function clearGeneration() {
+            state.pollToken += 1;
             state.lastJobId = '';
             state.lastMidiArtifact = null;
             syncActionButtons();
@@ -327,6 +332,83 @@
             const prefs = bridge.gatherPrefs();
             prefs.eegFileName = bridge.elements.eegFile?.files?.[0]?.name || bridge.elements.eegFile?.dataset?.fileName || prefs.eegFileName || '';
             return prefs;
+        }
+
+        function buildGenerationResultFromJob(job) {
+            const generation = job?.generation && typeof job.generation === 'object' ? job.generation : {};
+            const artifacts = job?.artifacts && typeof job.artifacts === 'object' ? job.artifacts : {};
+            const finalMidi = artifacts['final-midi'] && typeof artifacts['final-midi'] === 'object'
+                ? artifacts['final-midi']
+                : null;
+            const status = textOf(generation.status, textOf(job?.status, 'pending'));
+            const success = status === 'completed' && Boolean(finalMidi);
+            return {
+                success,
+                status,
+                job_id: textOf(job?.job_id, ''),
+                message: textOf(generation.message, success ? '生成完成。' : '生成失败，请重试。'),
+                final_midi: finalMidi,
+                output: finalMidi,
+                download_url: finalMidi?.download_url || '',
+                prepared: job?.prepared || null,
+                estimated_key: job?.estimated_key || null,
+                stages: Array.isArray(job?.stages) ? job.stages : [],
+            };
+        }
+
+        function buildPipelineResultFromJob(job) {
+            const generationResult = buildGenerationResultFromJob(job);
+            const evaluation = job?.evaluation && typeof job.evaluation === 'object' ? job.evaluation : {};
+            const evaluationSuccess = textOf(evaluation.status, '') === 'completed' && Boolean(evaluation.success);
+            return {
+                success: generationResult.success && evaluationSuccess,
+                status: textOf(evaluation.status, textOf(job?.status, 'pending')),
+                generation_result: generationResult,
+                evaluation_result: evaluation,
+                error: evaluation?.error || null,
+                warnings: Array.isArray(evaluation?.warnings) ? evaluation.warnings : [],
+            };
+        }
+
+        function sleep(ms) {
+            return new Promise((resolve) => window.setTimeout(resolve, ms));
+        }
+
+        async function pollJobUntil(jobId, { phase, token, onProgress }) {
+            const startedAt = Date.now();
+            let lastSnapshot = null;
+
+            while (state.pollToken === token) {
+                try {
+                    const snapshot = await apiClient.getJob(jobId);
+                    lastSnapshot = snapshot;
+                    if (typeof onProgress === 'function') {
+                        onProgress(snapshot);
+                    }
+
+                    const phaseState = snapshot?.[phase] && typeof snapshot[phase] === 'object'
+                        ? snapshot[phase]
+                        : {};
+                    const status = textOf(phaseState.status, '');
+                    if (status === 'completed' || status === 'error' || status === 'skipped') {
+                        return snapshot;
+                    }
+                } catch (error) {
+                    const statusCode = Number(error?.status || 0);
+                    const transient = statusCode === 404 || statusCode === 409 || statusCode === 425 || statusCode === 500 || statusCode === 503;
+                    if (!transient || Date.now() - startedAt >= POLL_TIMEOUT_MS) {
+                        throw error;
+                    }
+                }
+
+                if (Date.now() - startedAt >= POLL_TIMEOUT_MS) {
+                    throw new Error(phase === 'evaluation' ? '评估超时，请重试。' : '生成超时，请重试。');
+                }
+
+                await sleep(POLL_INTERVAL_MS);
+            }
+
+            return lastSnapshot;
         }
 
         function renderGenerationResult(generationResult) {
@@ -353,7 +435,7 @@
                     : textOf(generationResult?.message, '生成失败，请重试。');
             }
             if (elements.evaluationStatus) {
-                elements.evaluationStatus.textContent = state.lastJobId
+                elements.evaluationStatus.textContent = generationResult?.success
                     ? '可开始评估当前生成结果。'
                     : '尚未开始评估。';
             }
@@ -468,7 +550,40 @@
                     eegFile,
                     iniContent: bridge.buildIniContent(prefs),
                 });
-                const generationResult = response.data || {};
+                const accepted = response.data || {};
+                const jobId = textOf(accepted?.job_id, '');
+                if (!jobId) {
+                    throw new Error(textOf(accepted?.message, '生成任务未返回 job_id。'));
+                }
+
+                state.lastJobId = jobId;
+                syncActionButtons();
+
+                if (elements.resultPanel) {
+                    elements.resultPanel.hidden = false;
+                }
+                if (elements.generationStatus) {
+                    elements.generationStatus.textContent = '正在生成 MIDI…';
+                }
+                if (elements.evaluationStatus) {
+                    elements.evaluationStatus.textContent = '尚未开始评估。';
+                }
+
+                const pollToken = ++state.pollToken;
+                const snapshot = await pollJobUntil(jobId, {
+                    phase: 'generation',
+                    token: pollToken,
+                    onProgress(job) {
+                        if (elements.resultPanel) {
+                            elements.resultPanel.hidden = false;
+                        }
+                        const generationStatus = textOf(job?.generation?.status, '');
+                        if (elements.generationStatus && (generationStatus === 'queued' || generationStatus === 'running')) {
+                            elements.generationStatus.textContent = '正在生成 MIDI…';
+                        }
+                    },
+                });
+                const generationResult = buildGenerationResultFromJob(snapshot || {});
                 rememberGeneration(generationResult);
                 renderGenerationResult(generationResult);
 
@@ -522,14 +637,14 @@
                     throw new Error('当前结果中没有可下载的 MIDI 文件。');
                 }
 
-                setFeedback(`已开始下载 ${fileName}`, false);
+                setFeedback(`下载已开始：${fileName}`, false);
             } catch (error) {
                 setFeedback(textOf(error?.message, '下载失败，请重试。'), true);
             }
         }
 
         async function startEvaluation() {
-            if (!state.lastJobId) {
+            if (!state.lastJobId || !state.lastMidiArtifact) {
                 setFeedback('请先生成 MIDI。', true);
                 return;
             }
@@ -545,16 +660,40 @@
 
             try {
                 const response = await apiClient.evaluateJob(state.lastJobId);
-                const pipelineResult = response.data || {};
-                renderEvaluationResult(pipelineResult);
-                const errorCode = pipelineResult?.evaluation_result?.error?.code || pipelineResult?.error?.code || '';
+                const accepted = response.data || {};
+                const acceptedStatus = textOf(accepted?.status, '');
 
-                if (pipelineResult.success) {
+                if (acceptedStatus === 'completed') {
+                    const currentJob = await apiClient.getJob(state.lastJobId);
+                    const currentResult = buildPipelineResultFromJob(currentJob || {});
+                    renderEvaluationResult(currentResult);
                     setFeedback('评估完成。', false);
-                } else if (pipelineResult?.generation_result?.success && errorCode === 'missing_api_key') {
-                    setFeedback('评估服务未配置。', true);
                 } else {
-                    setFeedback(textOf(pipelineResult?.evaluation_result?.message || pipelineResult?.error?.message, '评估失败，请重试。'), true);
+                    const pollToken = ++state.pollToken;
+                    const snapshot = await pollJobUntil(state.lastJobId, {
+                        phase: 'evaluation',
+                        token: pollToken,
+                        onProgress(job) {
+                            if (elements.resultPanel) {
+                                elements.resultPanel.hidden = false;
+                            }
+                            const evaluationStatus = textOf(job?.evaluation?.status, '');
+                            if (elements.evaluationStatus && (evaluationStatus === 'queued' || evaluationStatus === 'running')) {
+                                elements.evaluationStatus.textContent = '正在评估…';
+                            }
+                        },
+                    });
+                    const pipelineResult = buildPipelineResultFromJob(snapshot || {});
+                    renderEvaluationResult(pipelineResult);
+                    const errorCode = pipelineResult?.evaluation_result?.error?.code || pipelineResult?.error?.code || '';
+
+                    if (pipelineResult.success) {
+                        setFeedback('评估完成。', false);
+                    } else if (pipelineResult?.generation_result?.success && errorCode === 'missing_api_key') {
+                        setFeedback('评估服务未配置。', true);
+                    } else {
+                        setFeedback(textOf(pipelineResult?.evaluation_result?.message || pipelineResult?.error?.message, '评估失败，请重试。'), true);
+                    }
                 }
             } catch (error) {
                 if (elements.resultPanel) {

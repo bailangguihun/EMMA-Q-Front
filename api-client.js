@@ -176,7 +176,7 @@
             ], {
                 method: 'POST',
                 body: formData,
-                timeout: 300000,
+                timeout: 30000,
                 isFormData: true,
             });
         }
@@ -187,7 +187,18 @@
             ], {
                 method: 'POST',
                 body: JSON.stringify({ job_id: jobId }),
-                timeout: 300000,
+                timeout: 30000,
+            });
+        }
+
+        async getJob(jobId) {
+            const safeJobId = encodeURIComponent(String(jobId || '').trim());
+            if (!safeJobId) {
+                throw new Error('job_id is required.');
+            }
+            return this.request(`/jobs/${safeJobId}`, {
+                method: 'GET',
+                timeout: 10000,
             });
         }
     }
