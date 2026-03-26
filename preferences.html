@@ -10,6 +10,7 @@
     <script src="app.js" defer></script>
     <script src="config.js" defer></script>
     <script src="api-client.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/html-midi-player@1.5.0" defer></script>
     <script src="preferences.js" defer></script>
 </head>
 <body class="page page-preferences">
@@ -37,8 +38,7 @@
                         <p class="eyebrow">Preference Workbench</p>
                         <h1>把脑电输入、音乐规则和后端执行放进同一个控制台</h1>
                         <p class="hero-text">
-                            这一页同时负责参数编辑、字段校验、本地草稿保存、INI 导出和后端提交。
-                            如果后端暂时没有启动，你仍然可以离线整理参数并导出配置。
+                            &#x8FD9;&#x4E00;&#x9875;&#x7528;&#x4E8E;&#x96C6;&#x4E2D;&#x5B8C;&#x6210;&#x53C2;&#x6570;&#x8BBE;&#x7F6E;&#x3001;MIDI &#x751F;&#x6210;&#x3001;&#x5728;&#x7EBF;&#x8BD5;&#x542C;&#x3001;&#x4E0B;&#x8F7D; MIDI &#x4E0E;&#x8BC4;&#x4F30;&#x53D1;&#x8D77;&#x3002;&#x4FDD;&#x7559;&#x73B0;&#x6709;&#x53C2;&#x6570;&#x533A;&#x4E0D;&#x53D8;&#xFF0C;&#x53EA;&#x7CBE;&#x7B80;&#x6267;&#x884C;&#x6D41;&#x7A0B;&#x3002;
                         </p>
                     </div>
 
@@ -46,9 +46,9 @@
                         <p class="eyebrow">执行节奏</p>
                         <h2>推荐工作流</h2>
                         <ul class="feature-list">
-                            <li>先选择 EEG CSV，再设定分析窗口与采样范围。</li>
-                            <li>在规则、动态和高级参数里完成音乐约束。</li>
-                            <li>保存草稿或导出 INI，最后再提交到后端生成任务。</li>
+                            <li>&#x5148;&#x9009;&#x62E9; EEG CSV&#xFF0C;&#x518D;&#x8BBE;&#x5B9A;&#x5206;&#x6790;&#x7A97;&#x53E3;&#x4E0E;&#x91C7;&#x6837;&#x8303;&#x56F4;&#x3002;</li>
+                            <li>&#x5728;&#x89C4;&#x5219;&#x3001;&#x52A8;&#x6001;&#x548C;&#x9AD8;&#x7EA7;&#x53C2;&#x6570;&#x91CC;&#x5B8C;&#x6210;&#x97F3;&#x4E50;&#x7EA6;&#x675F;&#x3002;</li>
+                            <li>&#x751F;&#x6210;&#x6210;&#x529F;&#x540E;&#x53EF;&#x76F4;&#x63A5;&#x8BD5;&#x542C;&#x3001;&#x4E0B;&#x8F7D; MIDI&#xFF0C;&#x5E76;&#x6309;&#x9700;&#x5F00;&#x59CB;&#x8BC4;&#x4F30;&#x3002;</li>
                         </ul>
                     </aside>
                 </div>
@@ -91,7 +91,7 @@
                                         </div>
                                         <input type="file" id="eeg-file" accept=".csv">
                                     </div>
-                                    <p class="field-hint">后端生成任务会直接上传这里选择的文件。</p>
+                                        <p class="field-hint">??????? POST /generate ? POST /evaluate?DeepSeek ???????????</p>
                                     <div class="field-error" id="eeg-file-error"></div>
                                 </div>
 
@@ -100,7 +100,7 @@
                                         <span>开始时间（秒）</span>
                                     </label>
                                     <input type="number" id="start-time" min="0" max="120" value="0">
-                                    <p class="field-hint">建议和 EEG 片段的实际起点对齐。</p>
+                                        <p class="field-hint">??????? POST /generate ? POST /evaluate?DeepSeek ???????????</p>
                                     <div class="field-error" id="start-time-error"></div>
                                 </div>
 
@@ -109,7 +109,7 @@
                                         <span>分析时长（秒）</span>
                                     </label>
                                     <input type="number" id="duration" min="30" max="120" value="30">
-                                    <p class="field-hint">用于截取本次音乐生成所依据的脑电窗口。</p>
+                                        <p class="field-hint">??????? POST /generate ? POST /evaluate?DeepSeek ???????????</p>
                                     <div class="field-error" id="duration-error"></div>
                                 </div>
 
@@ -119,7 +119,7 @@
                                         <span class="value-chip" data-value-for="sampling-rate">64</span>
                                     </label>
                                     <input type="range" id="sampling-rate" min="16" max="128" step="1" value="64">
-                                    <p class="field-hint">采样率越高，后端处理量越大。</p>
+                                        <p class="field-hint">??????? POST /generate ? POST /evaluate?DeepSeek ???????????</p>
                                     <div class="field-error" id="sampling-rate-error"></div>
                                 </div>
 
@@ -128,7 +128,7 @@
                                         <span>最大处理点数</span>
                                     </label>
                                     <input type="number" id="max-points" min="1000" max="30000" step="1" value="8000">
-                                    <p class="field-hint">限制单次分析量，防止生成请求过大。</p>
+                                        <p class="field-hint">??????? POST /generate ? POST /evaluate?DeepSeek ???????????</p>
                                     <div class="field-error" id="max-points-error"></div>
                                 </div>
 
@@ -138,7 +138,7 @@
                                         <span class="value-chip" data-value-for="melody-channel">0</span>
                                     </label>
                                     <input type="range" id="melody-channel" min="0" max="6" step="1" value="0">
-                                    <p class="field-hint">用于指定旋律轨道落在哪个处理通道。</p>
+                                        <p class="field-hint">??????? POST /generate ? POST /evaluate?DeepSeek ???????????</p>
                                     <div class="field-error" id="melody-channel-error"></div>
                                 </div>
                             </div>
@@ -166,7 +166,7 @@
                                         <option value="Rule1">Rule 1</option>
                                         <option value="Rule2">Rule 2</option>
                                     </select>
-                                    <p class="field-hint">用于切换后端预设规则集。</p>
+                                        <p class="field-hint">??????? POST /generate ? POST /evaluate?DeepSeek ???????????</p>
                                     <div class="field-error" id="rule-error"></div>
                                 </div>
 
@@ -181,7 +181,7 @@
                                         <option value="3/8">3/8</option>
                                         <option value="6/8">6/8</option>
                                     </select>
-                                    <p class="field-hint">拍号会影响后续节奏切分与和弦换位频率。</p>
+                                        <p class="field-hint">??????? POST /generate ? POST /evaluate?DeepSeek ???????????</p>
                                     <div class="field-error" id="time-signature-error"></div>
                                 </div>
 
@@ -191,7 +191,7 @@
                                         <span class="value-chip" data-value-for="pitch-center">66</span>
                                     </label>
                                     <input type="range" id="pitch-center" min="60" max="72" step="1" value="66">
-                                    <p class="field-hint">决定主旋律整体落在哪个音域中心附近。</p>
+                                        <p class="field-hint">??????? POST /generate ? POST /evaluate?DeepSeek ???????????</p>
                                     <div class="field-error" id="pitch-center-error"></div>
                                 </div>
 
@@ -201,7 +201,7 @@
                                         <span class="value-chip" data-value-for="span">8</span>
                                     </label>
                                     <input type="range" id="span" min="4" max="12" step="1" value="8">
-                                    <p class="field-hint">自动模式下控制高、中、低音的相对跨度。</p>
+                                        <p class="field-hint">??????? POST /generate ? POST /evaluate?DeepSeek ???????????</p>
                                     <div class="field-error" id="span-error"></div>
                                 </div>
 
@@ -213,7 +213,7 @@
                                         <option value="Mode1">自动（推荐）</option>
                                         <option value="Mode2">手动</option>
                                     </select>
-                                    <p class="field-hint">切到手动后，下面三个 Pitch 会生效。</p>
+                                        <p class="field-hint">??????? POST /generate ? POST /evaluate?DeepSeek ???????????</p>
                                     <div class="field-error" id="span-mode-error"></div>
                                 </div>
 
@@ -251,7 +251,7 @@
                                         <option value="Strong">强烈</option>
                                         <option value="Custom">手动</option>
                                     </select>
-                                    <p class="field-hint">预设决定三层力度的默认分布。</p>
+                                        <p class="field-hint">??????? POST /generate ? POST /evaluate?DeepSeek ???????????</p>
                                     <div class="field-error" id="dynamics-preset-error"></div>
                                 </div>
 
@@ -285,7 +285,7 @@
                                         <span class="value-chip" data-value-for="magnet">4</span>
                                     </label>
                                     <input type="range" id="magnet" min="0" max="12" step="1" value="4">
-                                    <p class="field-hint">数值越高，旋律会更倾向于吸附到规则中心。</p>
+                                        <p class="field-hint">??????? POST /generate ? POST /evaluate?DeepSeek ???????????</p>
                                     <div class="field-error" id="magnet-error"></div>
                                 </div>
 
@@ -295,7 +295,7 @@
                                         <span class="value-chip" data-value-for="loudness-offset">0</span>
                                     </label>
                                     <input type="range" id="loudness-offset" min="-30" max="30" step="1" value="0">
-                                    <p class="field-hint">给整体输出做统一的力度偏移。</p>
+                                        <p class="field-hint">??????? POST /generate ? POST /evaluate?DeepSeek ???????????</p>
                                     <div class="field-error" id="loudness-offset-error"></div>
                                 </div>
 
@@ -308,7 +308,7 @@
                                         <option value="Balanced">平衡</option>
                                         <option value="Aggressive">激进</option>
                                     </select>
-                                    <p class="field-hint">控制后端裁剪力度峰值时采用的策略。</p>
+                                        <p class="field-hint">??????? POST /generate ? POST /evaluate?DeepSeek ???????????</p>
                                     <div class="field-error" id="dynamics-limit-strategy-error"></div>
                                 </div>
                             </div>
@@ -475,7 +475,7 @@
                                         <label class="field-label" for="chord-track-enabled">
                                             <span>启用和弦轨</span>
                                         </label>
-                                        <p class="field-hint">关闭和弦层后，也可以只提交旋律参数。</p>
+                                        <p class="field-hint">??????? POST /generate ? POST /evaluate?DeepSeek ???????????</p>
                                     </div>
                                     <div class="field-error" id="chord-track-enabled-error"></div>
                                 </div>
@@ -571,11 +571,11 @@
                             <div class="panel-header">
                                 <div class="panel-heading">
                                     <p class="eyebrow">Output & API</p>
-                                    <h2>执行、导出与后端接口</h2>
-                                    <p class="panel-text">支持本地草稿保存、INI 导出、MIDI 生成、下载与评估发起。</p>
+                                    <h2>&#x6267;&#x884C;&#x3001;&#x4E0B;&#x8F7D;&#x4E0E;&#x540E;&#x7AEF;&#x63A5;&#x53E3;</h2>
+                                    <p class="panel-text">&#x8FD9;&#x91CC;&#x53EA;&#x4FDD;&#x7559;&#x751F;&#x6210; MIDI&#x3001;&#x5728;&#x7EBF;&#x8BD5;&#x542C;&#x3001;&#x4E0B;&#x8F7D; MIDI &#x4E0E;&#x5F00;&#x59CB;&#x8BC4;&#x4F30;&#x8FD9;&#x56DB;&#x4E2A;&#x6838;&#x5FC3;&#x52A8;&#x4F5C;&#x3002;</p>
                                 </div>
                                 <div class="panel-tags" aria-hidden="true">
-                                    <span class="tag">Draft</span>
+                                    <span class="tag">Playback</span>
                                     <span class="tag">API</span>
                                     <span class="tag">Generate</span>
                                 </div>
@@ -588,12 +588,20 @@
                                             <span>后端 API 地址</span>
                                         </label>
                                         <input type="text" id="api-base-url" value="" placeholder="Auto from config.js or enter a full API URL">
-                                        <p class="field-hint">默认约定：GET /health，POST /preferences，POST /generate，POST /evaluate。DeepSeek 凭据只保留在后端。</p>
+                                        <p class="field-hint">&#x5F53;&#x524D;&#x9875;&#x9762;&#x53EA;&#x4F9D;&#x8D56; POST /generate &#x548C; POST /evaluate&#xFF1B;DeepSeek &#x51ED;&#x636E;&#x59CB;&#x7EC8;&#x53EA;&#x4FDD;&#x7559;&#x5728;&#x540E;&#x7AEF;&#x3002;</p>
                                         <div class="field-error" id="api-base-url-error"></div>
                                     </div>
 
                                     <div class="status-banner" id="prefs-feedback" data-tone="neutral" aria-live="polite">
-                                        参数页已就绪。你可以先整理参数，再决定是否连接后端。
+                                        请先生成 MIDI。生成成功后可直接试听、下载，并开始评估。
+                                    </div>
+
+                                    <div class="response-card midi-player-panel" id="midi-player-panel" hidden>
+                                        <h3>生成结果试听</h3>
+                                        <p class="status-copy" id="midi-player-copy">点击播放试听当前生成的 MIDI。</p>
+                                        <div class="midi-player-shell">
+                                            <midi-player id="midi-player" sound-font></midi-player>
+                                        </div>
                                     </div>
 
                                     <div class="response-card" id="backend-response-panel" hidden>
@@ -616,7 +624,6 @@
                                             </div>
                                         </div>
                                         <ul class="contract-list response-links" id="backend-result-links" hidden></ul>
-                                        <pre id="backend-response-body"></pre>
                                     </div>
                                 </div>
 
@@ -624,16 +631,11 @@
                                     <div class="summary-card">
                                         <p class="eyebrow">Actions</p>
                                         <h3>执行操作</h3>
-                                        <p class="status-copy">请按顺序生成 MIDI、下载 MIDI，再开始评估；发起生成前仍需重新选择 EEG CSV 文件。</p>
+                                        <p class="status-copy">当前流程只保留生成 MIDI、下载 MIDI、开始评估；发起生成前请先选择 EEG CSV 文件。</p>
                                         <div class="action-row">
-                                            <button class="btn btn--primary btn--wide" type="button" id="save-prefs">保存草稿</button>
-                                            <button class="btn btn--secondary btn--wide" type="button" id="export-ini">导出 INI</button>
-                                            <button class="btn btn--ghost btn--wide" type="button" id="check-backend">检查接口</button>
-                                            <button class="btn btn--ghost btn--wide" type="button" id="submit-config">提交配置</button>
                                             <button class="btn btn--primary btn--wide" type="button" id="generate-music">生成 MIDI</button>
-                                            <button class="btn btn--secondary btn--wide" type="button" id="download-midi">下载 MIDI</button>
+                                            <button class="btn btn--secondary btn--wide" type="button" id="download-midi" hidden>下载 MIDI</button>
                                             <button class="btn btn--ghost btn--wide" type="button" id="start-evaluation">开始评估</button>
-                                            <button class="btn btn--danger btn--wide" type="button" id="clear-prefs">清空草稿</button>
                                         </div>
                                     </div>
                                 </div>
@@ -646,7 +648,7 @@
                     <section class="summary-card">
                         <p class="eyebrow">Realtime Summary</p>
                         <h2>当前配置概览</h2>
-                        <p class="status-copy" id="draft-note">尚未保存草稿。</p>
+                        <p class="status-copy" id="draft-note">&#x8BF7;&#x5148;&#x9009;&#x62E9; EEG &#x6587;&#x4EF6;&#xFF0C;&#x518D;&#x751F;&#x6210; MIDI&#x3002;</p>
                         <ul class="summary-list" id="prefs-summary"></ul>
 
                         <div class="check-grid">
@@ -663,29 +665,17 @@
                             <div class="check-card">
                                 <span class="status-pill status-pill--neutral" id="check-backend-pill">未检查</span>
                                 <strong>后端连接</strong>
-                                <p id="check-backend-copy">可先离线导出，等后端启动后再切换到在线提交。</p>
+                                <p id="check-backend-copy">&#x751F;&#x6210;&#x548C;&#x8BC4;&#x4F30;&#x53D1;&#x8D77;&#x65F6;&#x4F1A;&#x81EA;&#x52A8;&#x66F4;&#x65B0;&#x5F53;&#x524D;&#x540E;&#x7AEF;&#x72B6;&#x6001;&#x3002;</p>
                             </div>
                         </div>
                     </section>
 
-                    <section class="summary-card">
-                        <p class="eyebrow">Request Preview</p>
-                        <h2>默认接口约定</h2>
-                        <ul class="contract-list">
-                            <li><strong>GET</strong> <code>/health</code> 用于可用性检查。</li>
-                            <li><strong>POST</strong> <code>/preferences</code> 用于保存 JSON 配置快照。</li>
-                            <li><strong>POST</strong> <code>/generate</code> 用于上传 EEG 文件并生成 MIDI。</li>
-                            <li><strong>POST</strong> <code>/evaluate</code> 用于对已有 job 发起评估。</li>
-                        </ul>
-                        <pre class="code-preview" id="request-preview"></pre>
-                        <p class="note-inline">如果你直接用浏览器打开 HTML 文件，后端需要允许来自本地静态页的 CORS 请求。前端不会要求输入 DeepSeek API Key。</p>
-                    </section>
                 </aside>
             </div>
         </main>
 
         <footer class="site-footer">
-            <p>参数工作台会把前端草稿、INI 导出和 API 提交统一在一个页面里处理。</p>
+            <p>&#x53C2;&#x6570;&#x5DE5;&#x4F5C;&#x53F0;&#x4F1A;&#x628A;&#x53C2;&#x6570;&#x8BBE;&#x7F6E;&#x3001;MIDI &#x751F;&#x6210;&#x3001;&#x5728;&#x7EBF;&#x8BD5;&#x542C;&#x3001;&#x4E0B;&#x8F7D;&#x4E0E;&#x8BC4;&#x4F30;&#x53D1;&#x8D77;&#x7EDF;&#x4E00;&#x653E;&#x5728;&#x540C;&#x4E00;&#x4E2A;&#x9875;&#x9762;&#x91CC;&#x5904;&#x7406;&#x3002;</p>
             <p>EMMA-Q · The Brainwave Alpha Project</p>
         </footer>
     </div>

@@ -981,6 +981,26 @@ pre {
     color: var(--accent);
 }
 
+.midi-player-panel {
+    margin-bottom: 16px;
+}
+
+.midi-player-shell {
+    overflow: hidden;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 10px 12px;
+}
+
+.midi-player-shell midi-player {
+    width: 100%;
+    --main-color: #f4f0d7;
+    --hover-color: #c8f7e1;
+    --background-color: transparent;
+    --controls-color: #f4f0d7;
+}
+
 .response-card pre,
 .code-preview {
     margin: 0;

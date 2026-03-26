@@ -4,7 +4,6 @@
     }
 
     const STORAGE_KEYS = {
-        draft: 'emmaq.preferences.draft.v2',
         apiBaseUrl: 'emmaq.preferences.api-base-url',
     };
 
@@ -72,7 +71,7 @@
         showAllErrors: false,
         validationMode: 'basic',
         savedFileName: '',
-        lastSavedAt: '',
+        midiPlayerObjectUrl: '',
         lastJobId: '',
         lastMidiArtifact: null,
         backendTone: 'neutral',
@@ -106,10 +105,10 @@
         elements.feedback = byId('prefs-feedback');
         elements.summary = byId('prefs-summary');
         elements.draftNote = byId('draft-note');
-        elements.requestPreview = byId('request-preview');
+        elements.midiPlayerPanel = byId('midi-player-panel');
+        elements.midiPlayer = byId('midi-player');
         elements.responsePanel = byId('backend-response-panel');
         elements.responseTitle = byId('backend-response-title');
-        elements.responseBody = byId('backend-response-body');
         elements.resultSummary = byId('backend-result-summary');
         elements.resultLinks = byId('backend-result-links');
         elements.pipelineOverallPill = byId('pipeline-overall-pill');
@@ -124,11 +123,6 @@
         elements.checkValidationCopy = byId('check-validation-copy');
         elements.checkBackendPill = byId('check-backend-pill');
         elements.checkBackendCopy = byId('check-backend-copy');
-        elements.saveButton = byId('save-prefs');
-        elements.clearButton = byId('clear-prefs');
-        elements.exportButton = byId('export-ini');
-        elements.checkBackendButton = byId('check-backend');
-        elements.submitConfigButton = byId('submit-config');
         elements.generateButton = byId('generate-music');
         elements.downloadMidiButton = byId('download-midi');
         elements.evaluateButton = byId('start-evaluation');
@@ -163,18 +157,6 @@
             el.checked = Boolean(nextValue);
         } else {
             el.value = String(nextValue);
-        }
-    }
-
-    function formatDateTime(value) {
-        if (!value) {
-            return '';
-        }
-
-        try {
-            return new Date(value).toLocaleString('zh-CN');
-        } catch {
-            return value;
         }
     }
 
@@ -237,6 +219,60 @@
         }
     }
 
+    function cleanupMidiPlayerUrl() {
+        if (state.midiPlayerObjectUrl) {
+            URL.revokeObjectURL(state.midiPlayerObjectUrl);
+            state.midiPlayerObjectUrl = '';
+        }
+    }
+
+    function hideMidiPlayer() {
+        cleanupMidiPlayerUrl();
+        if (elements.midiPlayer && typeof elements.midiPlayer.stop === 'function') {
+            elements.midiPlayer.stop();
+        }
+        if (elements.midiPlayer) {
+            elements.midiPlayer.removeAttribute('src');
+        }
+        if (elements.midiPlayerPanel) {
+            elements.midiPlayerPanel.hidden = true;
+        }
+    }
+
+    function bindMidiPlayer(artifact, baseUrl) {
+        if (!elements.midiPlayerPanel || !elements.midiPlayer || !artifact || typeof artifact !== 'object') {
+            hideMidiPlayer();
+            return;
+        }
+
+        cleanupMidiPlayerUrl();
+
+        const directUrl = artifactUrl(baseUrl, artifact);
+        let playbackUrl = directUrl;
+
+        if (!playbackUrl && artifact.blob instanceof Blob) {
+            playbackUrl = URL.createObjectURL(artifact.blob);
+            state.midiPlayerObjectUrl = playbackUrl;
+        } else if (!playbackUrl && (artifact.bytes instanceof ArrayBuffer || ArrayBuffer.isView(artifact.bytes) || Array.isArray(artifact.bytes))) {
+            playbackUrl = URL.createObjectURL(new Blob([artifact.bytes], { type: 'audio/midi' }));
+            state.midiPlayerObjectUrl = playbackUrl;
+        } else if (!playbackUrl && typeof artifact.base64 === 'string' && artifact.base64.trim()) {
+            const midiBytes = decodeBase64ToBytes(artifact.base64);
+            if (midiBytes) {
+                playbackUrl = URL.createObjectURL(new Blob([midiBytes], { type: 'audio/midi' }));
+                state.midiPlayerObjectUrl = playbackUrl;
+            }
+        }
+
+        if (!playbackUrl) {
+            hideMidiPlayer();
+            return;
+        }
+
+        elements.midiPlayer.setAttribute('src', playbackUrl);
+        elements.midiPlayerPanel.hidden = false;
+    }
+
     function rememberGeneratedArtifacts(generationResult) {
         state.lastJobId = String(generationResult?.job_id || '').trim();
         state.lastMidiArtifact = generationResult?.final_midi || generationResult?.output || null;
@@ -245,6 +281,7 @@
     function clearGeneratedArtifacts() {
         state.lastJobId = '';
         state.lastMidiArtifact = null;
+        hideMidiPlayer();
     }
 
     function artifactUrl(baseUrl, artifact) {
@@ -319,20 +356,6 @@
         return 'error';
     }
 
-    function summarizeHealthStatus(data) {
-        const evaluationBackend = data?.evaluation_backend;
-        if (!evaluationBackend) {
-            return { tone: 'success', message: '健康检查通过。' };
-        }
-        if (!evaluationBackend.adapter_found) {
-            return { tone: 'warning', message: '生成服务可用，但评估适配器缺失。' };
-        }
-        if (!evaluationBackend.deepseek_api_key_present) {
-            return { tone: 'warning', message: '生成服务可用，但评估服务未配置。' };
-        }
-        return { tone: 'success', message: '生成与评估服务都可用。' };
-    }
-
     function summarizeGenerationResult(generation, prefs) {
         if (!generation || typeof generation !== 'object') {
             resetResultSummary();
@@ -340,45 +363,32 @@
         }
 
         elements.resultSummary.hidden = false;
-        setPill(
-            elements.pipelineOverallPill,
-            generation.success ? 'success' : 'error',
-            generation.success ? '已生成' : '失败'
-        );
+        setPill(elements.pipelineOverallPill, generation.success ? 'success' : 'error', generation.success ? '已生成' : '失败');
         elements.pipelineOverallCopy.textContent = normalizeMessage(
-            generation.success
-                ? 'MIDI 已生成。现在可以下载 MIDI，并在需要时开始评估。'
-                : generation.message,
+            generation.success ? 'MIDI 已生成。现在可以直接试听、下载，并开始评估。' : generation.message,
             '生成接口已返回响应。'
         );
 
-        setPill(
-            elements.pipelineGenerationPill,
-            generation.success ? 'success' : 'error',
-            generation.success ? '成功' : '失败'
-        );
+        setPill(elements.pipelineGenerationPill, generation.success ? 'success' : 'error', generation.success ? '成功' : '失败');
         elements.pipelineGenerationCopy.textContent = normalizeMessage(
-            generation.success
-                ? `${generation.message || 'MIDI 已生成。'} Job ID: ${generation.job_id || '-'}`
-                : generation.message,
+            generation.success ? `${generation.message || 'MIDI 已生成。'} Job ID: ${generation.job_id || '-'}` : generation.message,
             '尚未生成结果。'
         );
 
         setPill(elements.pipelineEvaluationPill, 'neutral', state.lastJobId ? '待开始' : '未执行');
         elements.pipelineEvaluationCopy.textContent = state.lastJobId
-            ? '可在下载 MIDI 后单独发起评估。'
-            : '请先完成 MIDI 生成。';
+            ? '可在试听或下载后单独发起评估。'
+            : '请先完成MIDI 生成。';
 
         const finalMidi = generation.final_midi || generation.output;
         const finalMidiHref = artifactUrl(prefs.apiBaseUrl, finalMidi);
-        const linkItems = finalMidiHref
-            ? [{
-                label: 'MIDI 文件',
-                href: finalMidiHref,
-                text: inferMidiFileName(finalMidi),
-            }]
-            : [];
+        const linkItems = finalMidiHref ? [{
+            label: 'MIDI 文件',
+            href: finalMidiHref,
+            text: inferMidiFileName(finalMidi),
+        }] : [];
         setLinkItems(linkItems);
+        bindMidiPlayer(finalMidi, prefs.apiBaseUrl);
     }
 
     function summarizePipelineResult(result, prefs) {
@@ -393,11 +403,7 @@
         const evaluationErrorCode = evaluationError.code || '';
 
         elements.resultSummary.hidden = false;
-        setPill(
-            elements.pipelineOverallPill,
-            pipelineTone(Boolean(result.success), result.status, evaluationErrorCode),
-            result.success ? '已完成' : result.status === 'partial_failure' ? '部分完成' : '失败'
-        );
+        setPill(elements.pipelineOverallPill, pipelineTone(Boolean(result.success), result.status, evaluationErrorCode), result.success ? '已完成' : result.status === 'partial_failure' ? '部分完成' : '失败');
         elements.pipelineOverallCopy.textContent = normalizeMessage(
             result.success
                 ? 'MIDI 已生成，评估已完成。'
@@ -406,26 +412,16 @@
                         ? '生成已完成，但评估服务未配置。'
                         : '生成已完成，但评估未成功。'
                     : (result.error && result.error.message),
-            '流水线返回了响应。'
+            '流水线已返回响应。'
         );
 
-        setPill(
-            elements.pipelineGenerationPill,
-            generation.success ? 'success' : 'error',
-            generation.success ? '成功' : '失败'
-        );
+        setPill(elements.pipelineGenerationPill, generation.success ? 'success' : 'error', generation.success ? '成功' : '失败');
         elements.pipelineGenerationCopy.textContent = normalizeMessage(
-            generation.success
-                ? `${generation.message || '生成完成。'} Job ID: ${generation.job_id || '-'}`
-                : generation.message,
+            generation.success ? `${generation.message || '生成完成。'} Job ID: ${generation.job_id || '-'}` : generation.message,
             '尚未生成结果。'
         );
 
-        setPill(
-            elements.pipelineEvaluationPill,
-            pipelineTone(Boolean(evaluation.success), evaluation.status, evaluationErrorCode),
-            evaluation.success ? '成功' : evaluationErrorCode === 'missing_api_key' ? '未配置' : evaluation.status === 'error' ? '失败' : '未执行'
-        );
+        setPill(elements.pipelineEvaluationPill, pipelineTone(Boolean(evaluation.success), evaluation.status, evaluationErrorCode), evaluation.success ? '成功' : evaluationErrorCode === 'missing_api_key' ? '未配置' : evaluation.status === 'error' ? '失败' : '未执行');
         elements.pipelineEvaluationCopy.textContent = normalizeMessage(
             evaluation.success
                 ? `评估完成，最终分数：${evaluation.final_score_total ?? '-'}`
@@ -452,7 +448,7 @@
             linkItems.push({
                 label: '评估报告',
                 href: reportHref,
-                text: reportArtifact.file_name || '下载 evaluation_report.json',
+                text: reportArtifact.file_name || 'download evaluation_report.json',
             });
         }
 
@@ -462,11 +458,12 @@
             linkItems.push({
                 label: '评估日志',
                 href: logHref,
-                text: logArtifact.file_name || '下载 evaluation_backend.log',
+                text: logArtifact.file_name || 'download evaluation_backend.log',
             });
         }
 
         setLinkItems(linkItems);
+        bindMidiPlayer(finalMidi, prefs.apiBaseUrl);
     }
 
     function getSelectedFile() {
@@ -490,13 +487,13 @@
         }
 
         if (state.savedFileName) {
-            elements.dropZoneTitle.textContent = `草稿文件名：${state.savedFileName}`;
-            elements.dropZoneSubtitle.textContent = '草稿不会保存文件内容。提交到后端前请重新选择 CSV 文件。';
+            elements.dropZoneTitle.textContent = `最近一次选择：${state.savedFileName}`;
+            elements.dropZoneSubtitle.textContent = '如果当前文件已被清空，请在生成前重新选择 EEG CSV 文件。';
             return;
         }
 
         elements.dropZoneTitle.textContent = '拖拽 EEG CSV 到此处';
-        elements.dropZoneSubtitle.textContent = '或点击选择本地文件。草稿只会记住文件名，刷新后需要重新选择文件本体。';
+        elements.dropZoneSubtitle.textContent = '或点击选择本地文件，生成前请确认 CSV 文件已正确选择。';
     }
 
     function updateValueChips() {
@@ -728,7 +725,7 @@
             ['EEG 数据', prefs.eegFileName || '未选择'],
             ['分析窗口', `${prefs.startTime}s / ${prefs.duration}s`],
             ['规则与拍号', `${prefs.rule} / ${prefs.timeSignature}`],
-            ['旋律中心', `${prefs.pitchCenter} · span ${prefs.span}`],
+            ['旋律中心', `${prefs.pitchCenter} ? span ${prefs.span}`],
             ['动态策略', `${optionLabel('dynamicsPreset', prefs.dynamicsPreset)} / ${optionLabel('dynamicsLimitStrategy', prefs.dynamicsLimitStrategy)}`],
             ['和弦层', prefs.chordTrackEnabled ? `${optionLabel('emotion', prefs.emotion)} / ${optionLabel('chordStyle', prefs.chordStyle)}` : '未启用'],
             ['接口地址', prefs.apiBaseUrl],
@@ -739,13 +736,9 @@
             .map(([label, value]) => `<li><strong>${label}</strong><span>${value}</span></li>`)
             .join('');
 
-        if (state.lastSavedAt) {
-            elements.draftNote.textContent = `草稿保存于 ${formatDateTime(state.lastSavedAt)}。${prefs.eegFileName ? '当前草稿已记录文件名。' : ''}`;
-        } else if (prefs.eegFileName) {
-            elements.draftNote.textContent = '当前有已选或已记录的 EEG 文件名，但还没有保存草稿。';
-        } else {
-            elements.draftNote.textContent = '尚未保存草稿。';
-        }
+        elements.draftNote.textContent = prefs.eegFileName
+            ? '当前已选择 EEG 文件，可直接发起生成。'
+            : '请先选择 EEG 文件，再生成 MIDI。';
     }
 
     function setPill(pill, tone, text) {
@@ -759,8 +752,8 @@
             setPill(elements.checkFilePill, 'success', '已加载');
             elements.checkFileCopy.textContent = `当前文件：${file.name}`;
         } else if (state.savedFileName) {
-            setPill(elements.checkFilePill, 'warning', '需重选');
-            elements.checkFileCopy.textContent = `草稿只记录了文件名：${state.savedFileName}`;
+            setPill(elements.checkFilePill, 'warning', '待确认');
+            elements.checkFileCopy.textContent = `最近选择：${state.savedFileName}`;
         } else {
             setPill(elements.checkFilePill, 'error', '未选择');
             elements.checkFileCopy.textContent = '还没有导入本次生成所需的 EEG CSV。';
@@ -769,10 +762,10 @@
         const errorCount = Object.keys(errors).length;
         if (errorCount === 0) {
             setPill(elements.checkValidationPill, 'success', '通过');
-            elements.checkValidationCopy.textContent = '所有字段都处于可提交状态。';
+            elements.checkValidationCopy.textContent = '所有字段都处于可生成状态。';
         } else {
             setPill(elements.checkValidationPill, 'warning', `${errorCount} 项`);
-            elements.checkValidationCopy.textContent = '仍有字段需要修正后再导出或提交。';
+            elements.checkValidationCopy.textContent = '仍有字段需要修正后再生成或评估。';
         }
 
         const backendTone = state.backendTone === 'success'
@@ -786,7 +779,7 @@
             elements.checkBackendPill,
             backendTone,
             state.backendTone === 'success'
-                ? '可用'
+                ? '就绪'
                 : state.backendTone === 'warning'
                     ? '受限'
                     : state.backendTone === 'error'
@@ -794,22 +787,11 @@
                         : '未检查'
         );
         elements.checkBackendCopy.textContent = state.backendMessage;
-
-        elements.requestPreview.textContent = JSON.stringify({
-            base_url: prefs.apiBaseUrl,
-            endpoints: {
-                health: `${prefs.apiBaseUrl}/health`,
-                preferences: `${prefs.apiBaseUrl}/preferences`,
-                generate: `${prefs.apiBaseUrl}/generate`,
-                evaluate: `${prefs.apiBaseUrl}/evaluate`,
-            },
-            eeg_file: prefs.eegFileName || null,
-            payload_sections: Object.keys(buildSections(prefs)),
-        }, null, 2);
     }
 
     function updateActionButtons() {
         if (elements.downloadMidiButton) {
+            elements.downloadMidiButton.hidden = !state.lastMidiArtifact;
             elements.downloadMidiButton.disabled = state.isBusy || !state.lastMidiArtifact;
         }
         if (elements.evaluateButton) {
@@ -825,23 +807,16 @@
     function renderResponse(title, data) {
         elements.responsePanel.hidden = false;
         elements.responseTitle.textContent = title;
-        elements.responseBody.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
     }
 
     function clearResponse() {
         elements.responsePanel.hidden = true;
-        elements.responseBody.textContent = '';
         resetResultSummary();
     }
 
     function setBusy(isBusy) {
         state.isBusy = isBusy;
         [
-            elements.saveButton,
-            elements.clearButton,
-            elements.exportButton,
-            elements.checkBackendButton,
-            elements.submitConfigButton,
             elements.generateButton,
             elements.downloadMidiButton,
             elements.evaluateButton,
@@ -863,70 +838,6 @@
         renderChecks(prefs, errors);
         updateActionButtons();
         return { prefs, errors };
-    }
-
-    function downloadText(filename, content) {
-        triggerBrowserDownload({
-            blob: new Blob([content], { type: 'text/plain;charset=utf-8' }),
-            fileName: filename,
-            mimeType: 'text/plain;charset=utf-8',
-        });
-    }
-
-    function saveDraft() {
-        state.validationMode = 'basic';
-        state.showAllErrors = true;
-        const { prefs, errors } = refreshUI();
-        if (Object.keys(errors).length) {
-            setFeedback('请先修正高亮字段，再保存草稿。', 'error');
-            return;
-        }
-
-        const record = {
-            version: 2,
-            savedAt: new Date().toISOString(),
-            preferences: prefs,
-        };
-
-        localStorage.setItem(STORAGE_KEYS.draft, JSON.stringify(record));
-        localStorage.setItem(STORAGE_KEYS.apiBaseUrl, prefs.apiBaseUrl);
-        state.savedFileName = prefs.eegFileName;
-        state.lastSavedAt = record.savedAt;
-        state.showAllErrors = false;
-        setFeedback('草稿已保存到浏览器本地。刷新页面后需要重新选择 EEG 文件本体。', 'success');
-        refreshUI();
-    }
-
-    function clearDraft() {
-        if (!window.confirm('确定要清空本地草稿和已记录的接口地址吗？')) {
-            return;
-        }
-
-        localStorage.removeItem(STORAGE_KEYS.draft);
-        localStorage.removeItem(STORAGE_KEYS.apiBaseUrl);
-        state.touched.clear();
-        state.showAllErrors = false;
-        state.savedFileName = '';
-        state.lastSavedAt = '';
-        clearGeneratedArtifacts();
-        clearResponse();
-        applyDefaults();
-        setFeedback('本地草稿已清空。', 'success');
-        refreshUI();
-    }
-
-    function exportIni() {
-        state.validationMode = 'basic';
-        state.showAllErrors = true;
-        const { prefs, errors } = refreshUI();
-        if (Object.keys(errors).length) {
-            setFeedback('请先修正字段错误，再导出 INI。', 'error');
-            return;
-        }
-
-        const fileName = `emma-q-preferences-${new Date().toISOString().replace(/[:T]/g, '-').slice(0, 19)}.ini`;
-        downloadText(fileName, buildIniContent(prefs));
-        setFeedback(`INI 已导出：${fileName}`, 'success');
     }
 
     async function downloadMidi() {
@@ -974,77 +885,12 @@
         }
     }
 
-    async function checkBackend() {
-        state.validationMode = 'basic';
-        state.showAllErrors = true;
-        const { prefs, errors } = refreshUI();
-        if (errors['api-base-url']) {
-            setFeedback('请先填写正确的后端 API 地址。', 'error');
-            return;
-        }
-
-        setBusy(true);
-        setFeedback('正在检查后端接口可用性...', 'neutral');
-
-        try {
-            apiClient.setBaseUrl(prefs.apiBaseUrl);
-            const response = await apiClient.healthcheck();
-            const summary = summarizeHealthStatus(response.data);
-            state.backendTone = summary.tone;
-            state.backendMessage = `${summary.message} (${response.pathUsed})`;
-            resetResultSummary();
-            renderResponse('后端健康检查', response.data);
-            setFeedback(summary.message, summary.tone);
-        } catch (error) {
-            state.backendTone = 'error';
-            state.backendMessage = error.message;
-            resetResultSummary();
-            renderResponse('后端健康检查失败', { error: error.message });
-            setFeedback(`接口检查失败：${error.message}`, 'error');
-        } finally {
-            setBusy(false);
-            refreshUI();
-        }
-    }
-
-    async function submitConfig() {
-        state.validationMode = 'basic';
-        state.showAllErrors = true;
-        const { prefs, errors } = refreshUI();
-        if (Object.keys(errors).length) {
-            setFeedback('请先修正字段错误，再提交配置。', 'error');
-            return;
-        }
-
-        setBusy(true);
-        setFeedback('正在提交配置到后端...', 'neutral');
-
-        try {
-            apiClient.setBaseUrl(prefs.apiBaseUrl);
-            const response = await apiClient.savePreferences(buildPayload(prefs));
-            state.backendTone = 'success';
-            state.backendMessage = `配置已提交：${response.pathUsed}`;
-            resetResultSummary();
-            renderResponse('配置提交结果', response.data);
-            setFeedback(`配置提交成功：${response.pathUsed}`, 'success');
-        } catch (error) {
-            state.backendTone = 'error';
-            state.backendMessage = error.message;
-            resetResultSummary();
-            renderResponse('配置提交失败', { error: error.message });
-            setFeedback(`配置提交失败：${error.message}`, 'error');
-        } finally {
-            setBusy(false);
-            refreshUI();
-        }
-    }
-
     async function generateMusic() {
         state.validationMode = 'generate';
         state.showAllErrors = true;
         const { prefs, errors } = refreshUI();
         if (Object.keys(errors).length) {
-            setFeedback('请先修正字段错误，并重新选择 EEG 文件，再发起生成。', 'error');
+            setFeedback('操作失败，请先修正参数并重新选择 EEG 文件。', 'error');
             return;
         }
 
@@ -1052,17 +898,17 @@
         if (!file) {
             state.touched.add('eeg-file');
             refreshUI();
-            setFeedback('生成任务需要上传当前 EEG CSV 文件。', 'error');
+            setFeedback('操作失败，请先选择 EEG CSV 文件。', 'error');
             return;
         }
 
         setBusy(true);
         clearGeneratedArtifacts();
         state.backendTone = 'neutral';
-        state.backendMessage = 'MIDI 生成进行中...';
+        state.backendMessage = '正在生成…';
         resetResultSummary();
         refreshUI();
-        setFeedback('正在上传 EEG 文件，并请求后端生成 MIDI...', 'neutral');
+        setFeedback('正在生成…', 'neutral');
 
         try {
             apiClient.setBaseUrl(prefs.apiBaseUrl);
@@ -1076,11 +922,11 @@
 
             if (generationResult?.success) {
                 state.backendTone = 'success';
-                state.backendMessage = `MIDI 已生成：${response.pathUsed}`;
-                setFeedback('MIDI 已生成。现在可以下载 MIDI，并开始评估。', 'success');
+                state.backendMessage = response.pathUsed || '生成完成';
+                setFeedback('生成完成', 'success');
             } else {
                 state.backendTone = 'error';
-                state.backendMessage = normalizeMessage(generationResult?.message, 'MIDI 生成失败。');
+                state.backendMessage = normalizeMessage(generationResult?.message, '操作失败，请重试');
                 setFeedback(state.backendMessage, 'error');
             }
 
@@ -1092,7 +938,7 @@
             state.backendMessage = error.message;
             resetResultSummary();
             renderResponse('MIDI 生成失败', error.payload || { error: error.message });
-            setFeedback(`MIDI 生成失败：${error.message}`, 'error');
+            setFeedback('操作失败，请重试', 'error');
         } finally {
             setBusy(false);
             refreshUI();
@@ -1104,10 +950,9 @@
         state.showAllErrors = true;
         const { prefs, errors } = refreshUI();
         if (errors['api-base-url']) {
-            setFeedback('请先填写正确的后端 API 地址。', 'error');
+            setFeedback('操作失败，请检查后端 API 地址。', 'error');
             return;
         }
-
         if (!state.lastJobId) {
             setFeedback('请先生成 MIDI，再开始评估。', 'warning');
             return;
@@ -1115,8 +960,8 @@
 
         setBusy(true);
         state.backendTone = 'neutral';
-        state.backendMessage = '评估进行中...';
-        setFeedback('正在请求后端评估当前 MIDI...', 'neutral');
+        state.backendMessage = '正在评估…';
+        setFeedback('正在评估…', 'neutral');
 
         try {
             apiClient.setBaseUrl(prefs.apiBaseUrl);
@@ -1126,19 +971,19 @@
 
             if (pipelineResult?.success) {
                 state.backendTone = 'success';
-                state.backendMessage = `评估已完成：${response.pathUsed}`;
-                setFeedback('评估已完成。', 'success');
+                state.backendMessage = response.pathUsed || '评估完成';
+                setFeedback('评估完成', 'success');
             } else if (pipelineResult?.generation_result?.success && evaluationErrorCode === 'missing_api_key') {
                 state.backendTone = 'warning';
                 state.backendMessage = '评估服务未配置。';
-                setFeedback('评估服务未配置。请在后端设置 DEEPSEEK_API_KEY。', 'warning');
+                setFeedback('评估服务未配置', 'warning');
             } else if (pipelineResult?.generation_result?.success) {
                 state.backendTone = 'warning';
-                state.backendMessage = normalizeMessage(pipelineResult?.evaluation_result?.message, '评估未成功。');
+                state.backendMessage = normalizeMessage(pipelineResult?.evaluation_result?.message, '操作失败，请重试');
                 setFeedback(state.backendMessage, 'warning');
             } else {
                 state.backendTone = 'error';
-                state.backendMessage = normalizeMessage(pipelineResult?.error?.message, '评估失败。');
+                state.backendMessage = normalizeMessage(pipelineResult?.error?.message, '操作失败，请重试');
                 setFeedback(state.backendMessage, 'error');
             }
 
@@ -1148,7 +993,7 @@
             state.backendTone = 'error';
             state.backendMessage = error.message;
             renderResponse('评估失败', error.payload || { error: error.message });
-            setFeedback(`评估失败：${error.message}`, 'error');
+            setFeedback('操作失败，请重试', 'error');
         } finally {
             setBusy(false);
             refreshUI();
@@ -1213,11 +1058,6 @@
             refreshUI();
         });
 
-        elements.saveButton.addEventListener('click', saveDraft);
-        elements.clearButton.addEventListener('click', clearDraft);
-        elements.exportButton.addEventListener('click', exportIni);
-        elements.checkBackendButton.addEventListener('click', checkBackend);
-        elements.submitConfigButton.addEventListener('click', submitConfig);
         elements.generateButton.addEventListener('click', generateMusic);
         elements.downloadMidiButton.addEventListener('click', downloadMidi);
         elements.evaluateButton.addEventListener('click', startEvaluation);
@@ -1231,45 +1071,12 @@
         updateDropZoneLabel();
     }
 
-    function applyPreferences(prefs) {
-        FIELD_CONFIG.forEach((config) => {
-            if (config.id === 'api-base-url') {
-                setFieldValue(config, prefs[config.key] || localStorage.getItem(STORAGE_KEYS.apiBaseUrl) || config.defaultValue);
-                return;
-            }
-
-            setFieldValue(config, prefs[config.key]);
-        });
-
-        state.savedFileName = prefs.eegFileName || '';
-        syncConditionalFields();
-        updateValueChips();
-        updateDropZoneLabel();
-    }
-
     function loadDraft() {
         applyDefaults();
         const storedApiBaseUrl = localStorage.getItem(STORAGE_KEYS.apiBaseUrl);
         if (storedApiBaseUrl) {
             field('api-base-url').value = window.normalizeEmmaQBaseUrl(storedApiBaseUrl);
         }
-
-        const raw = localStorage.getItem(STORAGE_KEYS.draft);
-        if (!raw) {
-            refreshUI();
-            return;
-        }
-
-        try {
-            const parsed = JSON.parse(raw);
-            const prefs = parsed.preferences || parsed;
-            state.lastSavedAt = parsed.savedAt || '';
-            applyPreferences(prefs);
-            setFeedback('已恢复本地草稿。提交到后端前，请重新选择 EEG 文件。', 'neutral');
-        } catch {
-            setFeedback('草稿读取失败，已恢复默认值。', 'warning');
-        }
-
         refreshUI();
     }
 
