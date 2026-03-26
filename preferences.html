@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="EMMA-Q 鍙傛暟宸ヤ綔鍙?>
-    <title>EMMA-Q | 鍙傛暟宸ヤ綔鍙?/title>
+    <meta name="description" content="EMMA-Q 参数工作台">
+    <title>EMMA-Q | 参数工作台</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
     <script src="app.js" defer></script>
@@ -15,17 +15,17 @@
 <body class="page page-preferences">
     <div class="page-shell">
         <header class="site-header">
-            <a class="brand" href="welcome.html" aria-label="EMMA-Q 棣栭〉">
+            <a class="brand" href="welcome.html" aria-label="EMMA-Q 首页">
                 <span class="brand-mark">EM</span>
                 <span class="brand-copy">
                     <strong>EMMA-Q</strong>
                     <span>Brainwave Alpha Project</span>
                 </span>
             </a>
-            <nav class="site-nav" aria-label="涓诲鑸?>
-                <a class="nav-link" href="welcome.html">棣栭〉</a>
-                <a class="nav-link" href="about.html">椤圭洰璇存槑</a>
-                <a class="nav-link is-current" href="preferences.html" aria-current="page">鍙傛暟宸ヤ綔鍙?/a>
+            <nav class="site-nav" aria-label="主导航">
+                <a class="nav-link" href="welcome.html">首页</a>
+                <a class="nav-link" href="about.html">项目说明</a>
+                <a class="nav-link is-current" href="preferences.html" aria-current="page">参数工作台</a>
             </nav>
         </header>
 
@@ -35,18 +35,20 @@
                 <div class="hero-grid">
                     <div class="hero-copy" data-reveal>
                         <p class="eyebrow">Preference Workbench</p>
-                        <h1>鎶婅剳鐢佃緭鍏ャ€侀煶涔愯鍒欏拰鍚庣鎵ц鏀捐繘鍚屼竴涓帶鍒跺彴</h1>
+                        <h1>把脑电输入、音乐规则和后端执行放进同一个控制台</h1>
                         <p class="hero-text">
-                            杩欓〉鍚屾椂璐熻矗鍙傛暟缂栬緫銆佸瓧娈垫牎楠屻€佹湰鍦拌崏绋夸繚瀛樸€両NI 瀵煎嚭鍜屽悗绔彁浜ゃ€?                            濡傛灉鍚庣鏆傛椂娌℃湁鍚姩锛屼綘浠嶇劧鍙互绂荤嚎鏁寸悊鍙傛暟骞跺鍑洪厤缃€?                        </p>
+                            这一页同时负责参数编辑、字段校验、本地草稿保存、INI 导出和后端提交。
+                            如果后端暂时没有启动，你仍然可以离线整理参数并导出配置。
+                        </p>
                     </div>
 
                     <aside class="hero-panel" data-reveal>
-                        <p class="eyebrow">鎵ц鑺傚</p>
-                        <h2>鎺ㄨ崘宸ヤ綔娴?/h2>
+                        <p class="eyebrow">执行节奏</p>
+                        <h2>推荐工作流</h2>
                         <ul class="feature-list">
-                            <li>鍏堥€夋嫨 EEG CSV锛屽啀璁惧畾鍒嗘瀽绐楀彛涓庨噰鏍疯寖鍥淬€?/li>
-                            <li>鍦ㄨ鍒欍€佸姩鎬佸拰楂樼骇鍙傛暟閲屽畬鎴愰煶涔愮害鏉熴€?/li>
-                            <li>淇濆瓨鑽夌鎴栧鍑?INI锛屾渶鍚庡啀鎻愪氦鍒板悗绔敓鎴愪换鍔°€?/li>
+                            <li>先选择 EEG CSV，再设定分析窗口与采样范围。</li>
+                            <li>在规则、动态和高级参数里完成音乐约束。</li>
+                            <li>保存草稿或导出 INI，最后再提交到后端生成任务。</li>
                         </ul>
                     </aside>
                 </div>
@@ -54,12 +56,12 @@
 
             <div class="workspace-grid">
                 <div class="workspace-main">
-                    <nav class="section-nav" aria-label="鍙傛暟鍒嗗尯瀵艰埅">
-                        <a class="section-chip" href="#panel-data">鏁版嵁杈撳叆</a>
-                        <a class="section-chip" href="#panel-rules">闊充箰瑙勫垯</a>
-                        <a class="section-chip" href="#panel-advanced">楂樼骇鍙傛暟</a>
-                        <a class="section-chip" href="#panel-chord">鍜屽０璁剧疆</a>
-                        <a class="section-chip" href="#panel-output">鎵ц涓庢帴鍙?/a>
+                    <nav class="section-nav" aria-label="参数分区导航">
+                        <a class="section-chip" href="#panel-data">数据输入</a>
+                        <a class="section-chip" href="#panel-rules">音乐规则</a>
+                        <a class="section-chip" href="#panel-advanced">高级参数</a>
+                        <a class="section-chip" href="#panel-chord">和声设置</a>
+                        <a class="section-chip" href="#panel-output">执行与接口</a>
                     </nav>
 
                     <form id="preferences-form" novalidate>
@@ -67,8 +69,8 @@
                             <div class="panel-header">
                                 <div class="panel-heading">
                                     <p class="eyebrow">Input</p>
-                                    <h2>鏁版嵁杈撳叆涓庨澶勭悊</h2>
-                                    <p class="panel-text">璁剧疆 EEG 鏂囦欢銆佸垎鏋愭椂闂寸獥鍙ｃ€佺洰鏍囬噰鏍风巼鍜屾渶澶у鐞嗙偣鏁般€?/p>
+                                    <h2>数据输入与预处理</h2>
+                                    <p class="panel-text">设置 EEG 文件、分析时间窗口、目标采样率和最大处理点数。</p>
                                 </div>
                                 <div class="panel-tags" aria-hidden="true">
                                     <span class="tag">EEG CSV</span>
@@ -79,64 +81,64 @@
                             <div class="field-grid">
                                 <div class="field full-width">
                                     <label class="field-label" for="eeg-file">
-                                        <span>EEG 鏁版嵁鏂囦欢</span>
+                                        <span>EEG 数据文件</span>
                                         <span class="value-chip">CSV</span>
                                     </label>
                                     <div id="drop-zone" class="drop-zone">
                                         <div class="drop-zone-copy">
-                                            <strong id="drop-zone-title">鎷栨嫿 EEG CSV 鍒版澶?/strong>
-                                            <span id="drop-zone-subtitle">鎴栫偣鍑婚€夋嫨鏈湴鏂囦欢銆傝崏绋垮彧浼氳浣忔枃浠跺悕锛屽埛鏂板悗闇€瑕侀噸鏂伴€夋嫨鏂囦欢鏈綋銆?/span>
+                                            <strong id="drop-zone-title">拖拽 EEG CSV 到此处</strong>
+                                            <span id="drop-zone-subtitle">或点击选择本地文件。草稿只会记住文件名，刷新后需要重新选择文件本体。</span>
                                         </div>
                                         <input type="file" id="eeg-file" accept=".csv">
                                     </div>
-                                    <p class="field-hint">鍚庣鐢熸垚浠诲姟浼氱洿鎺ヤ笂浼犺繖閲岄€夋嫨鐨勬枃浠躲€?/p>
+                                    <p class="field-hint">后端生成任务会直接上传这里选择的文件。</p>
                                     <div class="field-error" id="eeg-file-error"></div>
                                 </div>
 
                                 <div class="field">
                                     <label class="field-label" for="start-time">
-                                        <span>寮€濮嬫椂闂达紙绉掞級</span>
+                                        <span>开始时间（秒）</span>
                                     </label>
                                     <input type="number" id="start-time" min="0" max="120" value="0">
-                                    <p class="field-hint">寤鸿鍜?EEG 鐗囨鐨勫疄闄呰捣鐐瑰榻愩€?/p>
+                                    <p class="field-hint">建议和 EEG 片段的实际起点对齐。</p>
                                     <div class="field-error" id="start-time-error"></div>
                                 </div>
 
                                 <div class="field">
                                     <label class="field-label" for="duration">
-                                        <span>鍒嗘瀽鏃堕暱锛堢锛?/span>
+                                        <span>分析时长（秒）</span>
                                     </label>
                                     <input type="number" id="duration" min="30" max="120" value="30">
-                                    <p class="field-hint">鐢ㄤ簬鎴彇鏈闊充箰鐢熸垚鎵€渚濇嵁鐨勮剳鐢电獥鍙ｃ€?/p>
+                                    <p class="field-hint">用于截取本次音乐生成所依据的脑电窗口。</p>
                                     <div class="field-error" id="duration-error"></div>
                                 </div>
 
                                 <div class="field">
                                     <label class="field-label" for="sampling-rate">
-                                        <span>鐩爣閲囨牱鐜?/span>
+                                        <span>目标采样率</span>
                                         <span class="value-chip" data-value-for="sampling-rate">64</span>
                                     </label>
                                     <input type="range" id="sampling-rate" min="16" max="128" step="1" value="64">
-                                    <p class="field-hint">閲囨牱鐜囪秺楂橈紝鍚庣澶勭悊閲忚秺澶с€?/p>
+                                    <p class="field-hint">采样率越高，后端处理量越大。</p>
                                     <div class="field-error" id="sampling-rate-error"></div>
                                 </div>
 
                                 <div class="field">
                                     <label class="field-label" for="max-points">
-                                        <span>鏈€澶у鐞嗙偣鏁?/span>
+                                        <span>最大处理点数</span>
                                     </label>
                                     <input type="number" id="max-points" min="1000" max="30000" step="1" value="8000">
-                                    <p class="field-hint">闄愬埗鍗曟鍒嗘瀽閲忥紝闃叉鐢熸垚璇锋眰杩囧ぇ銆?/p>
+                                    <p class="field-hint">限制单次分析量，防止生成请求过大。</p>
                                     <div class="field-error" id="max-points-error"></div>
                                 </div>
 
                                 <div class="field">
                                     <label class="field-label" for="melody-channel">
-                                        <span>涓绘棆寰嬮€氶亾</span>
+                                        <span>主旋律通道</span>
                                         <span class="value-chip" data-value-for="melody-channel">0</span>
                                     </label>
                                     <input type="range" id="melody-channel" min="0" max="6" step="1" value="0">
-                                    <p class="field-hint">鐢ㄤ簬鎸囧畾鏃嬪緥杞ㄩ亾钀藉湪鍝釜澶勭悊閫氶亾銆?/p>
+                                    <p class="field-hint">用于指定旋律轨道落在哪个处理通道。</p>
                                     <div class="field-error" id="melody-channel-error"></div>
                                 </div>
                             </div>
@@ -146,8 +148,8 @@
                             <div class="panel-header">
                                 <div class="panel-heading">
                                     <p class="eyebrow">Rules</p>
-                                    <h2>闊充箰瑙勫垯涓庡姩鎬?/h2>
-                                    <p class="panel-text">鍐冲畾鎷嶅彿銆侀煶鍩熶腑蹇冦€佽法搴︽ā寮忋€佸姏搴﹂璁惧拰鍔ㄦ€侀檺鍒剁瓥鐣ャ€?/p>
+                                    <h2>音乐规则与动态</h2>
+                                    <p class="panel-text">决定拍号、音域中心、跨度模式、力度预设和动态限制策略。</p>
                                 </div>
                                 <div class="panel-tags" aria-hidden="true">
                                     <span class="tag">Rule Set</span>
@@ -158,19 +160,19 @@
                             <div class="field-grid">
                                 <div class="field">
                                     <label class="field-label" for="rule">
-                                        <span>瑙勫垯妯℃澘</span>
+                                        <span>规则模板</span>
                                     </label>
                                     <select id="rule">
                                         <option value="Rule1">Rule 1</option>
                                         <option value="Rule2">Rule 2</option>
                                     </select>
-                                    <p class="field-hint">鐢ㄤ簬鍒囨崲鍚庣棰勮瑙勫垯闆嗐€?/p>
+                                    <p class="field-hint">用于切换后端预设规则集。</p>
                                     <div class="field-error" id="rule-error"></div>
                                 </div>
 
                                 <div class="field">
                                     <label class="field-label" for="time-signature">
-                                        <span>鎷嶅彿</span>
+                                        <span>拍号</span>
                                     </label>
                                     <select id="time-signature">
                                         <option value="2/4">2/4</option>
@@ -179,45 +181,45 @@
                                         <option value="3/8">3/8</option>
                                         <option value="6/8">6/8</option>
                                     </select>
-                                    <p class="field-hint">鎷嶅彿浼氬奖鍝嶅悗缁妭濂忓垏鍒嗕笌鍜屽鸡鎹綅棰戠巼銆?/p>
+                                    <p class="field-hint">拍号会影响后续节奏切分与和弦换位频率。</p>
                                     <div class="field-error" id="time-signature-error"></div>
                                 </div>
 
                                 <div class="field">
                                     <label class="field-label" for="pitch-center">
-                                        <span>闊冲煙涓績</span>
+                                        <span>音域中心</span>
                                         <span class="value-chip" data-value-for="pitch-center">66</span>
                                     </label>
                                     <input type="range" id="pitch-center" min="60" max="72" step="1" value="66">
-                                    <p class="field-hint">鍐冲畾涓绘棆寰嬫暣浣撹惤鍦ㄥ摢涓煶鍩熶腑蹇冮檮杩戙€?/p>
+                                    <p class="field-hint">决定主旋律整体落在哪个音域中心附近。</p>
                                     <div class="field-error" id="pitch-center-error"></div>
                                 </div>
 
                                 <div class="field">
                                     <label class="field-label" for="span">
-                                        <span>涓夊眰璺ㄥ害</span>
+                                        <span>三层跨度</span>
                                         <span class="value-chip" data-value-for="span">8</span>
                                     </label>
                                     <input type="range" id="span" min="4" max="12" step="1" value="8">
-                                    <p class="field-hint">鑷姩妯″紡涓嬫帶鍒堕珮銆佷腑銆佷綆闊崇殑鐩稿璺ㄥ害銆?/p>
+                                    <p class="field-hint">自动模式下控制高、中、低音的相对跨度。</p>
                                     <div class="field-error" id="span-error"></div>
                                 </div>
 
                                 <div class="field">
                                     <label class="field-label" for="span-mode">
-                                        <span>璺ㄥ害妯″紡</span>
+                                        <span>跨度模式</span>
                                     </label>
                                     <select id="span-mode">
-                                        <option value="Mode1">鑷姩锛堟帹鑽愶級</option>
-                                        <option value="Mode2">鎵嬪姩</option>
+                                        <option value="Mode1">自动（推荐）</option>
+                                        <option value="Mode2">手动</option>
                                     </select>
-                                    <p class="field-hint">鍒囧埌鎵嬪姩鍚庯紝涓嬮潰涓変釜 Pitch 浼氱敓鏁堛€?/p>
+                                    <p class="field-hint">切到手动后，下面三个 Pitch 会生效。</p>
                                     <div class="field-error" id="span-mode-error"></div>
                                 </div>
 
                                 <div class="field span-mode-manual-field is-disabled">
                                     <label class="field-label" for="pitch-1">
-                                        <span>Pitch 1锛堥珮锛?/span>
+                                        <span>Pitch 1（高）</span>
                                     </label>
                                     <input type="number" id="pitch-1" min="0" max="127" value="74" disabled>
                                     <div class="field-error" id="pitch-1-error"></div>
@@ -225,7 +227,7 @@
 
                                 <div class="field span-mode-manual-field is-disabled">
                                     <label class="field-label" for="pitch-2">
-                                        <span>Pitch 2锛堜腑锛?/span>
+                                        <span>Pitch 2（中）</span>
                                     </label>
                                     <input type="number" id="pitch-2" min="0" max="127" value="66" disabled>
                                     <div class="field-error" id="pitch-2-error"></div>
@@ -233,7 +235,7 @@
 
                                 <div class="field span-mode-manual-field is-disabled">
                                     <label class="field-label" for="pitch-3">
-                                        <span>Pitch 3锛堜綆锛?/span>
+                                        <span>Pitch 3（低）</span>
                                     </label>
                                     <input type="number" id="pitch-3" min="0" max="127" value="58" disabled>
                                     <div class="field-error" id="pitch-3-error"></div>
@@ -241,15 +243,15 @@
 
                                 <div class="field">
                                     <label class="field-label" for="dynamics-preset">
-                                        <span>鍔涘害棰勮</span>
+                                        <span>力度预设</span>
                                     </label>
                                     <select id="dynamics-preset">
-                                        <option value="Light">鏌斿拰</option>
-                                        <option value="Standard">鏍囧噯</option>
-                                        <option value="Strong">寮虹儓</option>
-                                        <option value="Custom">鎵嬪姩</option>
+                                        <option value="Light">柔和</option>
+                                        <option value="Standard">标准</option>
+                                        <option value="Strong">强烈</option>
+                                        <option value="Custom">手动</option>
                                     </select>
-                                    <p class="field-hint">棰勮鍐冲畾涓夊眰鍔涘害鐨勯粯璁ゅ垎甯冦€?/p>
+                                    <p class="field-hint">预设决定三层力度的默认分布。</p>
                                     <div class="field-error" id="dynamics-preset-error"></div>
                                 </div>
 
@@ -279,34 +281,34 @@
 
                                 <div class="field">
                                     <label class="field-label" for="magnet">
-                                        <span>纾佸姏</span>
+                                        <span>磁力</span>
                                         <span class="value-chip" data-value-for="magnet">4</span>
                                     </label>
                                     <input type="range" id="magnet" min="0" max="12" step="1" value="4">
-                                    <p class="field-hint">鏁板€艰秺楂橈紝鏃嬪緥浼氭洿鍊惧悜浜庡惛闄勫埌瑙勫垯涓績銆?/p>
+                                    <p class="field-hint">数值越高，旋律会更倾向于吸附到规则中心。</p>
                                     <div class="field-error" id="magnet-error"></div>
                                 </div>
 
                                 <div class="field">
                                     <label class="field-label" for="loudness-offset">
-                                        <span>鏁翠綋鍝嶅害鍋忕Щ</span>
+                                        <span>整体响度偏移</span>
                                         <span class="value-chip" data-value-for="loudness-offset">0</span>
                                     </label>
                                     <input type="range" id="loudness-offset" min="-30" max="30" step="1" value="0">
-                                    <p class="field-hint">缁欐暣浣撹緭鍑哄仛缁熶竴鐨勫姏搴﹀亸绉汇€?/p>
+                                    <p class="field-hint">给整体输出做统一的力度偏移。</p>
                                     <div class="field-error" id="loudness-offset-error"></div>
                                 </div>
 
                                 <div class="field">
                                     <label class="field-label" for="dynamics-limit-strategy">
-                                        <span>鍔涘害涓婇檺绛栫暐</span>
+                                        <span>力度上限策略</span>
                                     </label>
                                     <select id="dynamics-limit-strategy">
-                                        <option value="Conservative">淇濆畧</option>
-                                        <option value="Balanced">骞宠　</option>
-                                        <option value="Aggressive">婵€杩?/option>
+                                        <option value="Conservative">保守</option>
+                                        <option value="Balanced">平衡</option>
+                                        <option value="Aggressive">激进</option>
                                     </select>
-                                    <p class="field-hint">鎺у埗鍚庣瑁佸壀鍔涘害宄板€兼椂閲囩敤鐨勭瓥鐣ャ€?/p>
+                                    <p class="field-hint">控制后端裁剪力度峰值时采用的策略。</p>
                                     <div class="field-error" id="dynamics-limit-strategy-error"></div>
                                 </div>
                             </div>
@@ -316,8 +318,8 @@
                             <div class="panel-header">
                                 <div class="panel-heading">
                                     <p class="eyebrow">Advanced</p>
-                                    <h2>楂樼骇鏃嬪緥鍙傛暟</h2>
-                                    <p class="panel-text">鐢ㄦ洿缁嗙殑鍙傛暟绾︽潫鑺傚閲忓寲銆佹憜鍔ㄧ▼搴︺€侀煶鍩熻寖鍥村拰鏃嬪緥璺宠繘鏂瑰紡銆?/p>
+                                    <h2>高级旋律参数</h2>
+                                    <p class="panel-text">用更细的参数约束节奏量化、摆动程度、音域范围和旋律跳进方式。</p>
                                 </div>
                                 <div class="panel-tags" aria-hidden="true">
                                     <span class="tag">Rhythm</span>
@@ -328,7 +330,7 @@
                             <div class="field-grid">
                                 <div class="field">
                                     <label class="field-label" for="rhythm-quantization">
-                                        <span>鑺傚閲忓寲</span>
+                                        <span>节奏量化</span>
                                     </label>
                                     <select id="rhythm-quantization">
                                         <option value="Off">Off</option>
@@ -341,7 +343,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="swing-amount">
-                                        <span>鎽嗗姩绋嬪害</span>
+                                        <span>摆动程度</span>
                                         <span class="value-chip" data-value-for="swing-amount">0.12</span>
                                     </label>
                                     <input type="range" id="swing-amount" min="0" max="0.6" step="0.01" value="0.12">
@@ -350,7 +352,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="note-duration-multiplier">
-                                        <span>闊崇鏃跺€煎€嶇巼</span>
+                                        <span>音符时值倍率</span>
                                         <span class="value-chip" data-value-for="note-duration-multiplier">1.2</span>
                                     </label>
                                     <input type="range" id="note-duration-multiplier" min="0.25" max="2.5" step="0.05" value="1.2">
@@ -359,7 +361,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="sparsity">
-                                        <span>绋€鐤忓寲绛夌骇</span>
+                                        <span>稀疏化等级</span>
                                     </label>
                                     <select id="sparsity">
                                         <option value="0">0</option>
@@ -373,7 +375,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="scale-constraint">
-                                        <span>闊抽樁绾︽潫</span>
+                                        <span>音阶约束</span>
                                     </label>
                                     <select id="scale-constraint">
                                         <option value="Diatonic">Diatonic</option>
@@ -385,7 +387,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="pitch-coherence">
-                                        <span>淇煶杩炶疮绋嬪害</span>
+                                        <span>修音连贯程度</span>
                                     </label>
                                     <select id="pitch-coherence">
                                         <option value="None">None</option>
@@ -399,7 +401,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="pitch-range-min">
-                                        <span>闊冲煙涓嬮檺</span>
+                                        <span>音域下限</span>
                                         <span class="value-chip" data-value-for="pitch-range-min">48</span>
                                     </label>
                                     <input type="range" id="pitch-range-min" min="12" max="84" step="1" value="48">
@@ -408,7 +410,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="pitch-range-max">
-                                        <span>闊冲煙涓婇檺</span>
+                                        <span>音域上限</span>
                                         <span class="value-chip" data-value-for="pitch-range-max">84</span>
                                     </label>
                                     <input type="range" id="pitch-range-max" min="48" max="120" step="1" value="84">
@@ -417,7 +419,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="max-leap">
-                                        <span>鏈€澶ц烦杩?/span>
+                                        <span>最大跳进</span>
                                         <span class="value-chip" data-value-for="max-leap">9</span>
                                     </label>
                                     <input type="range" id="max-leap" min="3" max="24" step="1" value="9">
@@ -426,7 +428,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="transpose">
-                                        <span>鏁翠綋杞皟</span>
+                                        <span>整体转调</span>
                                         <span class="value-chip" data-value-for="transpose">0</span>
                                     </label>
                                     <input type="range" id="transpose" min="-10" max="10" step="1" value="0">
@@ -435,7 +437,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="melody-min-velocity">
-                                        <span>涓绘棆寰嬫渶灏忓姏搴?/span>
+                                        <span>主旋律最小力度</span>
                                         <span class="value-chip" data-value-for="melody-min-velocity">45</span>
                                     </label>
                                     <input type="range" id="melody-min-velocity" min="30" max="60" step="1" value="45">
@@ -444,7 +446,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="melody-max-velocity">
-                                        <span>涓绘棆寰嬫渶澶у姏搴?/span>
+                                        <span>主旋律最大力度</span>
                                         <span class="value-chip" data-value-for="melody-max-velocity">90</span>
                                     </label>
                                     <input type="range" id="melody-max-velocity" min="75" max="105" step="1" value="90">
@@ -457,8 +459,8 @@
                             <div class="panel-header">
                                 <div class="panel-heading">
                                     <p class="eyebrow">Harmony</p>
-                                    <h2>鍜屽０涓庢儏缁缃?/h2>
-                                    <p class="panel-text">鍐冲畾鏄惁鐢熸垚鍜屽鸡杞紝浠ュ強璋冩€с€佹儏缁拰鍜屽鸡椋庢牸銆?/p>
+                                    <h2>和声与情绪设置</h2>
+                                    <p class="panel-text">决定是否生成和弦轨，以及调性、情绪和和弦风格。</p>
                                 </div>
                                 <div class="panel-tags" aria-hidden="true">
                                     <span class="tag">Chord Track</span>
@@ -471,16 +473,16 @@
                                     <input type="checkbox" id="chord-track-enabled">
                                     <div class="field-copy">
                                         <label class="field-label" for="chord-track-enabled">
-                                            <span>鍚敤鍜屽鸡杞?/span>
+                                            <span>启用和弦轨</span>
                                         </label>
-                                        <p class="field-hint">鍏抽棴鍜屽鸡灞傚悗锛屼篃鍙互鍙彁浜ゆ棆寰嬪弬鏁般€?/p>
+                                        <p class="field-hint">关闭和弦层后，也可以只提交旋律参数。</p>
                                     </div>
                                     <div class="field-error" id="chord-track-enabled-error"></div>
                                 </div>
 
                                 <div class="field">
                                     <label class="field-label" for="key-root">
-                                        <span>璋冩€ф牴闊?/span>
+                                        <span>调性根音</span>
                                     </label>
                                     <select id="key-root">
                                         <option value="Auto">Auto</option>
@@ -502,7 +504,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="major-minor">
-                                        <span>澶у皬璋?/span>
+                                        <span>大小调</span>
                                     </label>
                                     <select id="major-minor">
                                         <option value="Auto">Auto</option>
@@ -514,7 +516,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="emotion">
-                                        <span>鎯呯华</span>
+                                        <span>情绪</span>
                                     </label>
                                     <select id="emotion">
                                         <option value="Calm">Calm</option>
@@ -527,7 +529,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="chord-style">
-                                        <span>鍜屽鸡椋庢牸</span>
+                                        <span>和弦风格</span>
                                     </label>
                                     <select id="chord-style">
                                         <option value="Block">Block</option>
@@ -538,7 +540,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="chord-change-frequency">
-                                        <span>鍜屽鸡鍙樻崲棰戠巼</span>
+                                        <span>和弦变换频率</span>
                                         <span class="value-chip" data-value-for="chord-change-frequency">8</span>
                                     </label>
                                     <input type="range" id="chord-change-frequency" min="1" max="32" step="1" value="8">
@@ -547,7 +549,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="chord-octave-offset">
-                                        <span>鍜屽鸡鍏害鍋忕Щ</span>
+                                        <span>和弦八度偏移</span>
                                         <span class="value-chip" data-value-for="chord-octave-offset">0</span>
                                     </label>
                                     <input type="range" id="chord-octave-offset" min="-2" max="2" step="1" value="0">
@@ -556,7 +558,7 @@
 
                                 <div class="field">
                                     <label class="field-label" for="chord-velocity">
-                                        <span>鍜屽鸡鍔涘害</span>
+                                        <span>和弦力度</span>
                                         <span class="value-chip" data-value-for="chord-velocity">55</span>
                                     </label>
                                     <input type="range" id="chord-velocity" min="20" max="90" step="1" value="55">
@@ -569,8 +571,8 @@
                             <div class="panel-header">
                                 <div class="panel-heading">
                                     <p class="eyebrow">Output & API</p>
-                                    <h2>鎵ц銆佸鍑轰笌鍚庣鎺ュ彛</h2>
-                                    <p class="panel-text">鏀寔鏈湴鑽夌淇濆瓨銆両NI 瀵煎嚭銆佸悗绔厤缃彁浜や笌鐢熸垚浠诲姟鍙戣捣銆?/p>
+                                    <h2>执行、导出与后端接口</h2>
+                                    <p class="panel-text">支持本地草稿保存、INI 导出、后端配置提交与生成任务发起。</p>
                                 </div>
                                 <div class="panel-tags" aria-hidden="true">
                                     <span class="tag">Draft</span>
@@ -583,33 +585,34 @@
                                 <div class="stack">
                                     <div class="field full-width">
                                         <label class="field-label" for="api-base-url">
-                                            <span>鍚庣 API 鍦板潃</span>
+                                            <span>后端 API 地址</span>
                                         </label>
                                         <input type="text" id="api-base-url" value="" placeholder="Auto from config.js or enter a full API URL">
-                                        <p class="field-hint">Default contract: GET /health, POST /preferences, POST /pipeline/run. DeepSeek credentials stay on the backend only.</p>
+                                        <p class="field-hint">默认约定：GET /health，POST /preferences，POST /pipeline/run。DeepSeek 凭据只保留在后端。</p>
                                         <div class="field-error" id="api-base-url-error"></div>
                                     </div>
 
                                     <div class="status-banner" id="prefs-feedback" data-tone="neutral" aria-live="polite">
-                                        鍙傛暟椤靛凡灏辩华銆備綘鍙互鍏堟暣鐞嗗弬鏁帮紝鍐嶅喅瀹氭槸鍚﹁繛鎺ュ悗绔€?                                    </div>
+                                        参数页已就绪。你可以先整理参数，再决定是否连接后端。
+                                    </div>
 
                                     <div class="response-card" id="backend-response-panel" hidden>
-                                        <h3 id="backend-response-title">鏈€杩戜竴娆℃帴鍙ｅ搷搴?/h3>
+                                        <h3 id="backend-response-title">最近一次接口响应</h3>
                                         <div class="check-grid response-summary" id="backend-result-summary" hidden>
                                             <div class="check-card">
-                                                <span class="status-pill status-pill--neutral" id="pipeline-overall-pill">鏈墽琛?/span>
-                                                <strong>娴佹按绾跨姸鎬?/strong>
-                                                <p id="pipeline-overall-copy">杩樻病鏈夊彂璧风敓鎴愭垨璇勪及銆?/p>
+                                                <span class="status-pill status-pill--neutral" id="pipeline-overall-pill">未执行</span>
+                                                <strong>流水线状态</strong>
+                                                <p id="pipeline-overall-copy">还没有发起生成或评估。</p>
                                             </div>
                                             <div class="check-card">
-                                                <span class="status-pill status-pill--neutral" id="pipeline-generation-pill">鏈墽琛?/span>
-                                                <strong>鐢熸垚缁撴灉</strong>
-                                                <p id="pipeline-generation-copy">绛夊緟鐢熸垚銆?/p>
+                                                <span class="status-pill status-pill--neutral" id="pipeline-generation-pill">未执行</span>
+                                                <strong>生成结果</strong>
+                                                <p id="pipeline-generation-copy">等待生成。</p>
                                             </div>
                                             <div class="check-card">
-                                                <span class="status-pill status-pill--neutral" id="pipeline-evaluation-pill">鏈墽琛?/span>
-                                                <strong>璇勪及缁撴灉</strong>
-                                                <p id="pipeline-evaluation-copy">绛夊緟璇勪及銆?/p>
+                                                <span class="status-pill status-pill--neutral" id="pipeline-evaluation-pill">未执行</span>
+                                                <strong>评估结果</strong>
+                                                <p id="pipeline-evaluation-copy">等待评估。</p>
                                             </div>
                                         </div>
                                         <ul class="contract-list response-links" id="backend-result-links" hidden></ul>
@@ -620,15 +623,15 @@
                                 <div class="stack">
                                     <div class="summary-card">
                                         <p class="eyebrow">Actions</p>
-                                        <h3>鎵ц鎿嶄綔</h3>
-                                        <p class="status-copy">鏈湴鑽夌涓嶄細淇濆瓨鏂囦欢鍐呭锛涘鏋滆鍙戣捣鐢熸垚浠诲姟锛岃閲嶆柊閫夋嫨 EEG CSV 鏂囦欢銆?/p>
+                                        <h3>执行操作</h3>
+                                        <p class="status-copy">本地草稿不会保存文件内容；如果要发起生成任务，请重新选择 EEG CSV 文件。</p>
                                         <div class="action-row">
-                                            <button class="btn btn--primary btn--wide" type="button" id="save-prefs">淇濆瓨鑽夌</button>
-                                            <button class="btn btn--secondary btn--wide" type="button" id="export-ini">瀵煎嚭 INI</button>
-                                            <button class="btn btn--ghost btn--wide" type="button" id="check-backend">妫€鏌ユ帴鍙?/button>
-                                            <button class="btn btn--ghost btn--wide" type="button" id="submit-config">鎻愪氦閰嶇疆</button>
-                                            <button class="btn btn--primary btn--wide" type="button" id="generate-music">鐢熸垚骞惰瘎浼?/button>
-                                            <button class="btn btn--danger btn--wide" type="button" id="clear-prefs">娓呯┖鑽夌</button>
+                                            <button class="btn btn--primary btn--wide" type="button" id="save-prefs">保存草稿</button>
+                                            <button class="btn btn--secondary btn--wide" type="button" id="export-ini">导出 INI</button>
+                                            <button class="btn btn--ghost btn--wide" type="button" id="check-backend">检查接口</button>
+                                            <button class="btn btn--ghost btn--wide" type="button" id="submit-config">提交配置</button>
+                                            <button class="btn btn--primary btn--wide" type="button" id="generate-music">生成并评估</button>
+                                            <button class="btn btn--danger btn--wide" type="button" id="clear-prefs">清空草稿</button>
                                         </div>
                                     </div>
                                 </div>
@@ -640,48 +643,48 @@
                 <aside class="workspace-side">
                     <section class="summary-card">
                         <p class="eyebrow">Realtime Summary</p>
-                        <h2>褰撳墠閰嶇疆姒傝</h2>
-                        <p class="status-copy" id="draft-note">灏氭湭淇濆瓨鑽夌銆?/p>
+                        <h2>当前配置概览</h2>
+                        <p class="status-copy" id="draft-note">尚未保存草稿。</p>
                         <ul class="summary-list" id="prefs-summary"></ul>
 
                         <div class="check-grid">
                             <div class="check-card">
-                                <span class="status-pill status-pill--neutral" id="check-file-pill">鏈€夋嫨</span>
-                                <strong>EEG 鏂囦欢</strong>
-                                <p id="check-file-copy">杩樻病鏈夊鍏ユ湰娆＄敓鎴愭墍闇€鐨?EEG CSV銆?/p>
+                                <span class="status-pill status-pill--neutral" id="check-file-pill">未选择</span>
+                                <strong>EEG 文件</strong>
+                                <p id="check-file-copy">还没有导入本次生成所需的 EEG CSV。</p>
                             </div>
                             <div class="check-card">
-                                <span class="status-pill status-pill--neutral" id="check-validation-pill">寰呮牎楠?/span>
-                                <strong>鍙傛暟鏍￠獙</strong>
-                                <p id="check-validation-copy">淇敼瀛楁鍚庯紝绯荤粺浼氳嚜鍔ㄦ洿鏂版牎楠岀姸鎬併€?/p>
+                                <span class="status-pill status-pill--neutral" id="check-validation-pill">待校验</span>
+                                <strong>参数校验</strong>
+                                <p id="check-validation-copy">修改字段后，系统会自动更新校验状态。</p>
                             </div>
                             <div class="check-card">
-                                <span class="status-pill status-pill--neutral" id="check-backend-pill">鏈鏌?/span>
-                                <strong>鍚庣杩炴帴</strong>
-                                <p id="check-backend-copy">鍙厛绂荤嚎瀵煎嚭锛岀瓑鍚庣鍚姩鍚庡啀鍒囨崲鍒板湪绾挎彁浜ゃ€?/p>
+                                <span class="status-pill status-pill--neutral" id="check-backend-pill">未检查</span>
+                                <strong>后端连接</strong>
+                                <p id="check-backend-copy">可先离线导出，等后端启动后再切换到在线提交。</p>
                             </div>
                         </div>
                     </section>
 
                     <section class="summary-card">
                         <p class="eyebrow">Request Preview</p>
-                        <h2>榛樿鎺ュ彛绾﹀畾</h2>
+                        <h2>默认接口约定</h2>
                         <ul class="contract-list">
-                            <li><strong>GET</strong> <code>/health</code> 鐢ㄤ簬鍙敤鎬ф鏌ャ€?/li>
-                            <li><strong>POST</strong> <code>/preferences</code> 鐢ㄤ簬淇濆瓨 JSON 閰嶇疆蹇収銆?/li>
-                            <li><strong>POST</strong> <code>/pipeline/run</code> 鐢ㄤ簬涓婁紶 EEG 鏂囦欢骞舵墽琛岀敓鎴愪笌璇勪及娴佹按绾裤€?/li>
-                            <li><strong>POST</strong> <code>/evaluate</code> 鍙宸叉湁 job 鍐嶆鍙戣捣璇勪及銆?/li>
+                            <li><strong>GET</strong> <code>/health</code> 用于可用性检查。</li>
+                            <li><strong>POST</strong> <code>/preferences</code> 用于保存 JSON 配置快照。</li>
+                            <li><strong>POST</strong> <code>/pipeline/run</code> 用于上传 EEG 文件并执行生成与评估流水线。</li>
+                            <li><strong>POST</strong> <code>/evaluate</code> 可对已有 job 再次发起评估。</li>
                         </ul>
                         <pre class="code-preview" id="request-preview"></pre>
-                        <p class="note-inline">濡傛灉浣犵洿鎺ョ敤娴忚鍣ㄦ墦寮€ HTML 鏂囦欢锛屽悗绔渶瑕佸厑璁告潵鑷湰鍦伴潤鎬侀〉鐨?CORS 璇锋眰銆傚墠绔笉浼氳姹傝緭鍏?DeepSeek API Key銆?/p>
+                        <p class="note-inline">如果你直接用浏览器打开 HTML 文件，后端需要允许来自本地静态页的 CORS 请求。前端不会要求输入 DeepSeek API Key。</p>
                     </section>
                 </aside>
             </div>
         </main>
 
         <footer class="site-footer">
-            <p>鍙傛暟宸ヤ綔鍙颁細鎶婂墠绔崏绋裤€両NI 瀵煎嚭鍜?API 鎻愪氦缁熶竴鍦ㄤ竴椤甸噷澶勭悊銆?/p>
-            <p>EMMA-Q 路 The Brainwave Alpha Project</p>
+            <p>参数工作台会把前端草稿、INI 导出和 API 提交统一在一个页面里处理。</p>
+            <p>EMMA-Q · The Brainwave Alpha Project</p>
         </footer>
     </div>
 </body>
