@@ -572,7 +572,7 @@
                                 <div class="panel-heading">
                                     <p class="eyebrow">Output & API</p>
                                     <h2>执行、导出与后端接口</h2>
-                                    <p class="panel-text">支持本地草稿保存、INI 导出、后端配置提交与生成任务发起。</p>
+                                    <p class="panel-text">支持本地草稿保存、INI 导出、MIDI 生成、下载与评估发起。</p>
                                 </div>
                                 <div class="panel-tags" aria-hidden="true">
                                     <span class="tag">Draft</span>
@@ -588,7 +588,7 @@
                                             <span>后端 API 地址</span>
                                         </label>
                                         <input type="text" id="api-base-url" value="" placeholder="Auto from config.js or enter a full API URL">
-                                        <p class="field-hint">默认约定：GET /health，POST /preferences，POST /pipeline/run。DeepSeek 凭据只保留在后端。</p>
+                                        <p class="field-hint">默认约定：GET /health，POST /preferences，POST /generate，POST /evaluate。DeepSeek 凭据只保留在后端。</p>
                                         <div class="field-error" id="api-base-url-error"></div>
                                     </div>
 
@@ -624,13 +624,15 @@
                                     <div class="summary-card">
                                         <p class="eyebrow">Actions</p>
                                         <h3>执行操作</h3>
-                                        <p class="status-copy">本地草稿不会保存文件内容；如果要发起生成任务，请重新选择 EEG CSV 文件。</p>
+                                        <p class="status-copy">请按顺序生成 MIDI、下载 MIDI，再开始评估；发起生成前仍需重新选择 EEG CSV 文件。</p>
                                         <div class="action-row">
                                             <button class="btn btn--primary btn--wide" type="button" id="save-prefs">保存草稿</button>
                                             <button class="btn btn--secondary btn--wide" type="button" id="export-ini">导出 INI</button>
                                             <button class="btn btn--ghost btn--wide" type="button" id="check-backend">检查接口</button>
                                             <button class="btn btn--ghost btn--wide" type="button" id="submit-config">提交配置</button>
-                                            <button class="btn btn--primary btn--wide" type="button" id="generate-music">生成并评估</button>
+                                            <button class="btn btn--primary btn--wide" type="button" id="generate-music">生成 MIDI</button>
+                                            <button class="btn btn--secondary btn--wide" type="button" id="download-midi">下载 MIDI</button>
+                                            <button class="btn btn--ghost btn--wide" type="button" id="start-evaluation">开始评估</button>
                                             <button class="btn btn--danger btn--wide" type="button" id="clear-prefs">清空草稿</button>
                                         </div>
                                     </div>
@@ -672,8 +674,8 @@
                         <ul class="contract-list">
                             <li><strong>GET</strong> <code>/health</code> 用于可用性检查。</li>
                             <li><strong>POST</strong> <code>/preferences</code> 用于保存 JSON 配置快照。</li>
-                            <li><strong>POST</strong> <code>/pipeline/run</code> 用于上传 EEG 文件并执行生成与评估流水线。</li>
-                            <li><strong>POST</strong> <code>/evaluate</code> 可对已有 job 再次发起评估。</li>
+                            <li><strong>POST</strong> <code>/generate</code> 用于上传 EEG 文件并生成 MIDI。</li>
+                            <li><strong>POST</strong> <code>/evaluate</code> 用于对已有 job 发起评估。</li>
                         </ul>
                         <pre class="code-preview" id="request-preview"></pre>
                         <p class="note-inline">如果你直接用浏览器打开 HTML 文件，后端需要允许来自本地静态页的 CORS 请求。前端不会要求输入 DeepSeek API Key。</p>
